@@ -1,0 +1,32 @@
+version: '2'
+services:
+    base-node:
+        image: node:latest
+        volumes:
+            - ./vue:/usr/src/galoory/
+            - galoory_node_modules:/usr/src/galoory/node_modules
+        working_dir: /usr/src/galoory/
+    install-node:
+        extends:
+            service: base-node
+        command: npm i
+    base-php:
+        image: php:7.4-fpm
+        volumes:
+            - nfsmountSymfonyGaloory:/var/www/html/symfony
+        working_dir: /var/www/html/symfony
+    install-php:
+        extends:
+            service: base-php
+        command: composer install
+
+volumes:
+    galoory_node_modules:
+        external: true
+    postgres: ~
+    nfsmountSymfonyGaloory:
+        driver: local
+        driver_opts:
+            type: nfs
+            o: addr=host.docker.internal,rw,nolock,hard,nointr,nfsvers=3
+            device: ":/System/Volumes/Data${PWD}/symfony"
