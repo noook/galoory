@@ -1,0 +1,81 @@
+<?php
+
+namespace App\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
+
+/**
+ * @ORM\Entity(repositoryClass=App\Repository\PhotoShootRepository::class)
+ */
+class PhotoShoot
+{
+    /**
+     * @ORM\Id()
+     * @ORM\Column(type="uuid", unique=true)
+     */
+    private UuidInterface $id;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="photoShoots")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private User $customer;
+
+    /**
+     * @ORM\Column(type="date", nullable=true)
+     */
+    private \DateTime $expiration;
+
+    /**
+     * @ORM\Column(type="string", length=30)
+     */
+    private string $status;
+
+    public function __construct()
+    {
+        $this->id = Uuid::uuid4();
+    }
+
+    public function getId(): UuidInterface
+    {
+        return $this->id;
+    }
+
+    public function getCustomer(): ?User
+    {
+        return $this->customer;
+    }
+
+    public function setCustomer(?User $customer): self
+    {
+        $this->customer = $customer;
+
+        return $this;
+    }
+
+    public function getExpiration(): ?\DateTimeInterface
+    {
+        return $this->expiration;
+    }
+
+    public function setExpiration(?\DateTimeInterface $expiration): self
+    {
+        $this->expiration = $expiration;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+}
