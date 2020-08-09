@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=App\Repository\PhotoPackageRepository::class)
@@ -14,16 +15,19 @@ class PhotoPackage
     /**
      * @ORM\Id()
      * @ORM\Column(type="uuid", unique=true)
+     * @Groups({"photo-package"})
      */
     private ?UuidInterface $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"photo-package"})
      */
     private string $name;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
+     * @Groups({"photo-package"})
      */
     private int $quantity;
 

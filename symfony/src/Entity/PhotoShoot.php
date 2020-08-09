@@ -33,6 +33,12 @@ class PhotoShoot
      */
     private string $status;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=PhotoPackage::class)
+     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
+     */
+    private $package;
+
     public function __construct()
     {
         $this->id = Uuid::uuid4();
@@ -75,6 +81,18 @@ class PhotoShoot
     public function setStatus(string $status): self
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getPackage(): ?PhotoPackage
+    {
+        return $this->package;
+    }
+
+    public function setPackage(?PhotoPackage $package): self
+    {
+        $this->package = $package;
 
         return $this;
     }

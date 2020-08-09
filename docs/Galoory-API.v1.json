@@ -2,7 +2,13 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Galoory API",
-    "version": "1.0"
+    "version": "1.0",
+    "contact": {
+      "name": "Neil Richter",
+      "url": "https://nook.sh",
+      "email": "me@neilrichter.com"
+    },
+    "description": "API Documentation for Galoory API. Galoory is a service that allow a photographer's customers to select a sample of pictures they want to buy in their package."
   },
   "servers": [
     {
@@ -35,7 +41,10 @@
                     "message": {
                       "type": "string"
                     }
-                  }
+                  },
+                  "required": [
+                    "message"
+                  ]
                 },
                 "examples": {
                   "Example missing fields": {
@@ -62,7 +71,10 @@
                     "message": {
                       "type": "string"
                     }
-                  }
+                  },
+                  "required": [
+                    "message"
+                  ]
                 },
                 "examples": {
                   "Example email already exists": {
@@ -75,7 +87,7 @@
             }
           }
         },
-        "description": "",
+        "description": "Creates a user",
         "security": [],
         "requestBody": {
           "content": {
@@ -119,6 +131,140 @@
             }
           }
         }
+      }
+    },
+    "/login": {
+      "post": {
+        "summary": "",
+        "operationId": "post-login",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string",
+                      "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE1OTcwMDcwMDksImV4cCI6MTU5NzAxMDYwOSwicm9sZXMiOlsiUk9MRV9VU0VSIl0sInVzZXJuYW1lIjoibWVAbmVpbHJpY2h0ZXIuY29tIn0.Ar6BpPtNAjfmAJnyRAz6RVyce3NZB6zEQFUPapPlQ3X0YKFMu7lUzKOSnww1mB5xkhEXvcHp0utQ3HlPS2fpyI0Yw1jNP63pUVy--eFIuapqtTYCHGlnCQ7FKHb1G1-N48NWIVx2nu_8Pt0EgiE64RLRtFREbNVCGkKgPAKAe9SMafXzqYDFA3Grc-TC8NySvbgH14wg71YT492XuA0y6nFoSq5M8jVVg5WdgLNVVWz6NDMrRvxshTICY97XWkyWch13s4a1AwJ1oNx6rON5-EuK8L8SpnvReAizjNotqMfc6WdsijqqXKvyGPpPkHWJs4jSQCXqoVDW3Wo-Fvwy8yq0WARoc5vC6XOv1VwoUsOSGYJZlblzaqg12GJRgf0ju_saODNMXjmqF5I7-eCFsVTFiHUTUJyQKV316KzqxXN_yOoRfZMGPmDYd2haOPox-LB26fED7rqxtUNmymom5CzEIzei3cGz641z1DAKOgoE1HCp5Pvq-MnBTjkc9VzgJIxto2PeWOauD7-qkxAqwvq445Zw7XjtvpXuAsEZltBx0RrDkFwELidNNsXdI7_JqktaaZ1VDpd3vSPSRCtEacpsnPDr49E4RPuEvtEcXTTc2khpihMXrjpfHdoPYW5opt35Yg7WePUX7K_EZdJAM1jaZDr4vVZKQrwK5Gk1-LQ"
+                    }
+                  }
+                },
+                "examples": {
+                  "Auth success": {
+                    "value": {
+                      "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE1OTcwMDcwMDksImV4cCI6MTU5NzAxMDYwOSwicm9sZXMiOlsiUk9MRV9VU0VSIl0sInVzZXJuYW1lIjoibWVAbmVpbHJpY2h0ZXIuY29tIn0.Ar6BpPtNAjfmAJnyRAz6RVyce3NZB6zEQFUPapPlQ3X0YKFMu7lUzKOSnww1mB5xkhEXvcHp0utQ3HlPS2fpyI0Yw1jNP63pUVy--eFIuapqtTYCHGlnCQ7FKHb1G1-N48NWIVx2nu_8Pt0EgiE64RLRtFREbNVCGkKgPAKAe9SMafXzqYDFA3Grc-TC8NySvbgH14wg71YT492XuA0y6nFoSq5M8jVVg5WdgLNVVWz6NDMrRvxshTICY97XWkyWch13s4a1AwJ1oNx6rON5-EuK8L8SpnvReAizjNotqMfc6WdsijqqXKvyGPpPkHWJs4jSQCXqoVDW3Wo-Fvwy8yq0WARoc5vC6XOv1VwoUsOSGYJZlblzaqg12GJRgf0ju_saODNMXjmqF5I7-eCFsVTFiHUTUJyQKV316KzqxXN_yOoRfZMGPmDYd2haOPox-LB26fED7rqxtUNmymom5CzEIzei3cGz641z1DAKOgoE1HCp5Pvq-MnBTjkc9VzgJIxto2PeWOauD7-qkxAqwvq445Zw7XjtvpXuAsEZltBx0RrDkFwELidNNsXdI7_JqktaaZ1VDpd3vSPSRCtEacpsnPDr49E4RPuEvtEcXTTc2khpihMXrjpfHdoPYW5opt35Yg7WePUX7K_EZdJAM1jaZDr4vVZKQrwK5Gk1-LQ"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer",
+                      "enum": [
+                        401
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ]
+                },
+                "examples": {
+                  "Auth failure - Invalid credentials": {
+                    "value": {
+                      "code": 401,
+                      "message": "Invalid credentials."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "description": "Returns a JSON Web Token in exchange for valid credentials",
+        "security": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "password": {
+                    "type": "string",
+                    "format": "password"
+                  }
+                },
+                "required": [
+                  "username",
+                  "password"
+                ]
+              }
+            }
+          },
+          "description": ""
+        }
+      }
+    },
+    "/photo-package": {
+      "get": {
+        "summary": "Your GET endpoint",
+        "tags": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PhotoPackage"
+                  }
+                },
+                "examples": {
+                  "Photo package list": {
+                    "value": [
+                      {
+                        "id": "f9631aef-3d9b-4f90-9234-ab9140a69822",
+                        "name": "Découverte",
+                        "quantity": 6
+                      },
+                      {
+                        "id": "af330c0a-39cb-4433-879e-1cb40ed470d5",
+                        "name": "Avantage",
+                        "quantity": 10
+                      },
+                      {
+                        "id": "fd6c6a60-94e3-4dc2-a9d4-62b04a1b912c",
+                        "name": "Duo",
+                        "quantity": 15
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get-photo-package",
+        "description": "Lists Photo packages"
       }
     }
   },
@@ -168,8 +314,50 @@
           "lastname": {
             "type": "string"
           }
-        }
+        },
+        "description": "Represents a user which you authenticate as to perform actions."
+      },
+      "PhotoPackage": {
+        "title": "PhotoPackage",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "f9631aef-3d9b-4f90-9234-ab9140a69822"
+          },
+          "": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "",
+          "quantity"
+        ],
+        "x-examples": {
+          "Photo Package": {
+            "id": "f9631aef-3d9b-4f90-9234-ab9140a69822",
+            "name": "Découverte",
+            "quantity": 6
+          }
+        },
+        "description": "Represents a photo package that describes how any pictures a customer can select for a selected package."
+      }
+    },
+    "securitySchemes": {
+      "Authorization": {
+        "type": "http",
+        "scheme": "bearer"
       }
     }
-  }
+  },
+  "security": [
+    {
+      "Authorization": []
+    }
+  ]
 }
