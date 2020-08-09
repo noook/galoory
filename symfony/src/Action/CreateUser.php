@@ -16,7 +16,6 @@ class CreateUser
     private string $lastname;
 
     /**
-     * @Assert\NotCompromisedPassword
      * @Assert\Length(min = 8)
      */
     private string $password;

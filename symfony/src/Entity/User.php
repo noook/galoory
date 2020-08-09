@@ -7,27 +7,35 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=App\Repository\UserRepository::class)
  * @ORM\Table(name="`user`")
+ * @UniqueEntity(fields={"email"}, errorPath="email", message="Email already in use")
  */
 class User implements UserInterface
 {
     /**
      * @ORM\Id()
      * @ORM\Column(type="uuid", unique=true)
+     * @Groups({"user"})
      */
     private UuidInterface $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Groups({"user"})
+     * @Assert\Email
      */
     private string $email;
 
     /**
      * @ORM\Column(type="json")
+     * @Groups({"user"})
      */
     private array $roles = [];
 
@@ -40,15 +48,17 @@ class User implements UserInterface
     /**
      * @ORM\OneToMany(targetEntity=PhotoShoot::class, mappedBy="customer", orphanRemoval=true)
      */
-    private array $photoShoots;
+    private Collection $photoShoots;
 
     /**
      * @ORM\Column(type="string", length=100)
+     * @Groups({"user"})
      */
     private $firstname;
 
     /**
      * @ORM\Column(type="string", length=100)
+     * @Groups({"user"})
      */
     private $lastname;
 
@@ -70,6 +80,10 @@ class User implements UserInterface
 
     public function setEmail(string $email): self
     {
+        if (false === filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            throw new \DomainException('Invalid email');
+        }
+
         $this->email = $email;
 
         return $this;

@@ -1,0 +1,89 @@
+{
+	"info": {
+		"_postman_id": "dc2b560c-09a5-4333-b34f-bd847ea1e922",
+		"name": "Galoory",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register user",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"<email>\",\n    \"firstname\": \"<string>\",\n    \"lastname\": \"<string>\",\n    \"password\": \"<string>\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{access_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "c024821c-c553-4b66-970d-4033c4c677e5",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "d9feb95f-4f37-4a78-a962-23a7cfa85ff9",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "eaf4b2eb-6a38-4f67-bc2b-c363a5489085",
+			"key": "access_token",
+			"value": ""
+		},
+		{
+			"id": "0a348fa4-0300-4c33-8ea0-b4f40af7a54f",
+			"key": "baseUrl",
+			"value": ""
+		}
+	],
+	"protocolProfileBehavior": {}
+}
