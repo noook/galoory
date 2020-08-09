@@ -36,6 +36,75 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0ad78ec2-10c7-41b6-a505-c851468e01e3",
+								"exec": [
+									"pm.test(\"JWT is valid\", function () {",
+									"    const { token } = pm.response.json();",
+									"    const tokenData = JSON.parse(atob(token.split('.')[1]))",
+									"    const email = tokenData.username;",
+									"    const username = JSON.parse(pm.request.body.raw).username;",
+									"    pm.expect(email).to.eql(username);",
+									"    pm.collectionVariables.set('access_token', token)",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"<string>\",\n    \"password\": \"<string>\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Photo Package",
+			"item": [
+				{
+					"name": "List Photo packages",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/photo-package",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"photo-package"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"protocolProfileBehavior": {}
@@ -75,12 +144,12 @@
 	],
 	"variable": [
 		{
-			"id": "eaf4b2eb-6a38-4f67-bc2b-c363a5489085",
+			"id": "0a96ab3c-71fe-4a4a-baf0-401b4fe22d55",
 			"key": "access_token",
 			"value": ""
 		},
 		{
-			"id": "0a348fa4-0300-4c33-8ea0-b4f40af7a54f",
+			"id": "4c415184-99db-46a2-b6c0-74de139d0393",
 			"key": "baseUrl",
 			"value": ""
 		}
