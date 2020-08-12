@@ -34,7 +34,7 @@ class UserController extends AbstractController
                     $payload['email'],
                     $payload['firstname'],
                     $payload['lastname'],
-                    'password',
+                    $payload['password'],
                 )
             );
         } catch (\Exception $e) {

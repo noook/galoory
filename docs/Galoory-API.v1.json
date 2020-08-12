@@ -18,7 +18,7 @@
   "paths": {
     "/users": {
       "post": {
-        "summary": "",
+        "summary": "Register user",
         "operationId": "post-users",
         "responses": {
           "201": {
@@ -135,7 +135,7 @@
     },
     "/login": {
       "post": {
-        "summary": "",
+        "summary": "Login",
         "operationId": "post-login",
         "responses": {
           "200": {
@@ -225,7 +225,7 @@
     },
     "/photo-package": {
       "get": {
-        "summary": "Your GET endpoint",
+        "summary": "List Photo Packages",
         "tags": [],
         "responses": {
           "200": {
@@ -265,6 +265,147 @@
         },
         "operationId": "get-photo-package",
         "description": "Lists Photo packages"
+      }
+    },
+    "/photoshoot": {
+      "get": {
+        "summary": "List Photoshoots",
+        "tags": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Photoshoot"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get-photoshoot",
+        "description": "Lists all photoshoots for an admin user."
+      },
+      "post": {
+        "summary": "New Photoshoot",
+        "operationId": "post-photoshoot",
+        "responses": {
+          "201": {
+            "description": "Created",
+            "headers": {},
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Photoshoot"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid value \"%s\" for field \"user\""
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Email already in use"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user": {
+                    "type": [
+                      "string",
+                      "object"
+                    ],
+                    "format": "uuid",
+                    "required": [
+                      "email",
+                      "firstname",
+                      "lastname"
+                    ],
+                    "properties": {
+                      "email": {
+                        "type": "string",
+                        "format": "email"
+                      },
+                      "firstname": {
+                        "type": "string"
+                      },
+                      "lastname": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "expiration": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "package": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                },
+                "required": [
+                  "user",
+                  "expiration",
+                  "package"
+                ]
+              },
+              "examples": {
+                "Example new user": {
+                  "value": {
+                    "user": {
+                      "email": "<email>",
+                      "firstname": "<string>",
+                      "lastname": "<string>"
+                    },
+                    "package": "<uuid>",
+                    "expiration": "<date>"
+                  }
+                },
+                "Example existing user": {
+                  "value": {
+                    "user": "<uuid>",
+                    "package": "<uuid>",
+                    "expiration": "<date>"
+                  }
+                }
+              }
+            }
+          },
+          "description": "User can either be a uuid to link to an existing user, or a new user object."
+        }
       }
     }
   },
@@ -320,6 +461,14 @@
       "PhotoPackage": {
         "title": "PhotoPackage",
         "type": "object",
+        "x-examples": {
+          "Photo Package": {
+            "id": "f9631aef-3d9b-4f90-9234-ab9140a69822",
+            "name": "Découverte",
+            "quantity": 6
+          }
+        },
+        "description": "Represents a photo package that describes how any pictures a customer can select for a selected package.",
         "properties": {
           "id": {
             "type": "string",
@@ -337,15 +486,46 @@
           "id",
           "",
           "quantity"
-        ],
-        "x-examples": {
-          "Photo Package": {
-            "id": "f9631aef-3d9b-4f90-9234-ab9140a69822",
-            "name": "Découverte",
-            "quantity": 6
+        ]
+      },
+      "Photoshoot": {
+        "title": "Photoshoot",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "93b04902-9d39-41aa-a3e8-ab2002455019"
+          },
+          "customer": {
+            "$ref": "#/components/schemas/User"
+          },
+          "expiration": {
+            "type": "string",
+            "format": "date",
+            "example": "2020-08-12T00:00:00+00:00"
+          },
+          "status": {
+            "$ref": "#/components/schemas/PhotoshootStatus"
+          },
+          "package": {
+            "$ref": "#/components/schemas/PhotoPackage"
           }
         },
-        "description": "Represents a photo package that describes how any pictures a customer can select for a selected package."
+        "required": [
+          "id",
+          "customer",
+          "expiration",
+          "status",
+          "package"
+        ]
+      },
+      "PhotoshootStatus": {
+        "type": "string",
+        "title": "PhotoshootStatus",
+        "enum": [
+          "pending"
+        ]
       }
     },
     "securitySchemes": {

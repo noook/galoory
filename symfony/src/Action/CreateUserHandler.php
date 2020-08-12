@@ -5,8 +5,9 @@ namespace App\Action;
 
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -37,8 +38,12 @@ class CreateUserHandler implements MessageHandlerInterface
             ->setEmail($command->getEmail());
 
         $errors = $this->validator->validate($user);
+
         if ($errors->has(0)) {
-            throw new BadRequestException($errors->get(0)->getMessage());
+            if ($errors->get(0)->getCode() === UniqueEntity::NOT_UNIQUE_ERROR) {
+                throw new ConflictHttpException($errors->get(0)->getMessage());
+            }
+            throw new BadRequestHttpException($errors->get(0)->getMessage());
         }
         
         $hashedPassword = $this->userPasswordEncoder->encodePassword($user, $command->getPassword());

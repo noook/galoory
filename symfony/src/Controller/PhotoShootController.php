@@ -2,19 +2,113 @@
 
 namespace App\Controller;
 
+use App\Action\CreatePhotoshoot;
+use App\Action\CreateUser;
+use App\Form\UserRegisterType;
+use App\Repository\PhotoPackageRepository;
+use App\Repository\PhotoShootRepository;
+use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Messenger\Stamp\HandledStamp;
 use Symfony\Component\Routing\Annotation\Route;
 
 class PhotoShootController extends AbstractController
 {
     /**
-     * @Route("/photoshoot", name="photo_shoot")
+     * @Route("/photoshoot", name="list-photoshoots", methods={"GET"})
      */
-    public function index()
+    public function listPhotoshoots(PhotoShootRepository $photoShootRepository): JsonResponse
     {
-        return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/PhotoShootController.php',
-        ]);
+        return $this->json(
+            $photoShootRepository->findAll(),
+            JsonResponse::HTTP_OK,
+            [],
+            ['groups' => ['photoshoot', 'user', 'photo-package']]
+        );
+    }
+
+    /**
+     * @Route("/photoshoot", name="new-photoshoot", methods={"POST"})
+     */
+    public function newPhotoshoot(
+        Request $request,
+        PhotoPackageRepository $photoPackageRepository,
+        UserRepository $userRepository,
+        MessageBusInterface $commandBus
+    ): JsonResponse
+    {
+        $payload = \json_decode($request->getContent(), true);
+
+        $requiredFields = ['user', 'package', 'expiration'];
+        
+        foreach ($requiredFields as $field) {
+            if (!isset($payload[$field])) {
+                return $this->json([
+                    'message' => sprintf('Missing field "%s"', $field),
+                ], JsonResponse::HTTP_BAD_REQUEST);
+            }
+        }
+
+        $package = $photoPackageRepository->find($payload['package']);
+
+        if (null === $package) {
+            return $this->json([
+                'message' => sprintf('Invalid value "%s" for field "package"', $payload['package']),
+            ], JsonResponse::HTTP_BAD_REQUEST);
+        }
+
+        if (is_string($payload['user'])) {
+            $user = $userRepository->find($payload['user']);
+            if (null === $user) {
+                return $this->json([
+                    'message' => sprintf('Invalid value "%s" for field "user"', $payload['user']),
+                ]);
+            }
+        } else {
+            $userPayload = array_merge(
+                $payload['user'],
+                ['password' => 'password']
+            );
+            $form = $this->createForm(UserRegisterType::class, $userPayload);
+            $form->submit($userPayload);
+
+            try {
+                $envelope = $commandBus->dispatch(
+                    new CreateUser(
+                        $userPayload['email'],
+                        $userPayload['firstname'],
+                        $userPayload['lastname'],
+                        $userPayload['password']
+                    )
+                );
+                $user = $envelope->last(HandledStamp::class)->getResult();
+            } catch (\Exception $e) {
+                return $this->json([
+                    'message' => $e->getMessage(),
+                ], JsonResponse::HTTP_CONFLICT);
+            }
+        }
+
+        $expiration = new \DateTime($payload['expiration']);
+
+        $envelope = $commandBus->dispatch(
+            new CreatePhotoshoot(
+                $user,
+                $package,
+                $expiration
+            )
+        );
+
+        $photoshoot = $envelope->last(HandledStamp::class)->getResult();
+
+        return $this->json(
+            $photoshoot,
+            JsonResponse::HTTP_CREATED,
+            [],
+            ['groups' => ['photoshoot', 'user', 'photo-package']]
+        );
     }
 }

@@ -108,6 +108,75 @@
 				}
 			],
 			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Photoshoot",
+			"item": [
+				{
+					"name": "New Photoshoot existing user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user\": \"<uuid>\",\n    \"package\": \"<uuid>\",  \n    \"expiration\": \"<date>\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/photoshoot",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"photoshoot"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Photoshoot new user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user\": {\n        \"email\": \"<email>\",\n        \"firstname\": \"<string>\",\n        \"lastname\": \"<string>\"\n    },\n    \"package\": \"<uuid>\",  \n    \"expiration\": \"<date>\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/photoshoot",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"photoshoot"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List photoshoots",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": ""
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
 		}
 	],
 	"auth": {
@@ -144,12 +213,12 @@
 	],
 	"variable": [
 		{
-			"id": "0a96ab3c-71fe-4a4a-baf0-401b4fe22d55",
+			"id": "b2b6efc6-e786-486a-bc6b-cee5e310651c",
 			"key": "access_token",
 			"value": ""
 		},
 		{
-			"id": "4c415184-99db-46a2-b6c0-74de139d0393",
+			"id": "293aebd9-1117-451b-a108-978faa4cafc9",
 			"key": "baseUrl",
 			"value": ""
 		}
