@@ -170,7 +170,58 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": ""
+							"raw": "{{baseUrl}}/photoshoot",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"photoshoot"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add files to photoshoot",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "files[]",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "files[]",
+									"type": "file",
+									"src": []
+								}
+							],
+							"options": {
+								"formdata": {}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/photoshoot/:photoshootId/files",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"photoshoot",
+								":photoshootId",
+								"files"
+							],
+							"variable": [
+								{
+									"id": "459c2c4a-ad4e-48b9-a36f-bcfa3b49f9c2",
+									"key": "photoshootId",
+									"value": "",
+									"type": "string"
+								}
+							]
 						}
 					},
 					"response": []
@@ -213,12 +264,12 @@
 	],
 	"variable": [
 		{
-			"id": "b2b6efc6-e786-486a-bc6b-cee5e310651c",
+			"id": "f6064408-6328-4e63-93f0-d88e950d9d40",
 			"key": "access_token",
 			"value": ""
 		},
 		{
-			"id": "293aebd9-1117-451b-a108-978faa4cafc9",
+			"id": "4a204c3b-f2f7-40e8-b8de-cc9896e8cde5",
 			"key": "baseUrl",
 			"value": ""
 		}

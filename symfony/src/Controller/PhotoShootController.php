@@ -4,10 +4,13 @@ namespace App\Controller;
 
 use App\Action\CreatePhotoshoot;
 use App\Action\CreateUser;
+use App\Action\SaveFile;
+use App\Entity\PhotoShoot;
 use App\Form\UserRegisterType;
 use App\Repository\PhotoPackageRepository;
 use App\Repository\PhotoShootRepository;
 use App\Repository\UserRepository;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -110,5 +113,26 @@ class PhotoShootController extends AbstractController
             [],
             ['groups' => ['photoshoot', 'user', 'photo-package']]
         );
+    }
+
+    /**
+     * @Route("/photoshoot/{photoshoot}/files", name="photoshoot-files", methods={"POST"})
+     * @ParamConverter("photoshoot", class="App\Entity\PhotoShoot")
+     */
+    public function uploadFiles(Request $request, PhotoShoot $photoshoot, MessageBusInterface $commandBus): JsonResponse
+    {
+        $files = $request->files->get('files', []);
+
+        if (count($files) > 15) {
+            return $this->json([
+                'message' => 'Too much files. Upload limited to 15 files, please use a .zip archive.'
+            ], JsonResponse::HTTP_BAD_REQUEST);
+        }
+
+        foreach ($files as $file) {
+            $commandBus->dispatch(new SaveFile($file, $photoshoot));
+        }
+
+        return $this->json([], JsonResponse::HTTP_NO_CONTENT, []);
     }
 }

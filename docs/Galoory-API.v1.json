@@ -407,6 +407,69 @@
           "description": "User can either be a uuid to link to an existing user, or a new user object."
         }
       }
+    },
+    "/photoshoot/{photoshootId}/files": {
+      "parameters": [
+        {
+          "schema": {
+            "type": "string"
+          },
+          "name": "photoshootId",
+          "in": "path",
+          "required": true
+        }
+      ],
+      "post": {
+        "summary": "Uploads files to a photoshoot",
+        "operationId": "post-photoshoot-photoshootId-files",
+        "responses": {
+          "204": {
+            "description": "Successfully uploaded."
+          },
+          "400": {
+            "description": "Bad Request - Too much files",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "Too much files": {
+                    "value": {
+                      "message": "Too much files. Upload limited to 15 files, please use a .zip archive."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "description": "Uploads files for a photoshoot",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "files[]": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "files[]"
+                ]
+              }
+            }
+          },
+          "description": "Attach files, up to 15 to the `files[]` key. Use `.zip` archives to upload more than 15 files."
+        }
+      }
     }
   },
   "components": {

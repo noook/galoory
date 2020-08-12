@@ -295,6 +295,9 @@
             "config/packages/messenger.yaml"
         ]
     },
+    "symfony/mime": {
+        "version": "v5.1.3"
+    },
     "symfony/options-resolver": {
         "version": "v5.1.3"
     },
@@ -305,6 +308,9 @@
         "version": "v1.18.1"
     },
     "symfony/polyfill-intl-icu": {
+        "version": "v1.18.1"
+    },
+    "symfony/polyfill-intl-idn": {
         "version": "v1.18.1"
     },
     "symfony/polyfill-intl-normalizer": {
