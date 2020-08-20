@@ -19,6 +19,13 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class User implements UserInterface
 {
+    const ROLE_ADMIN = 'ROLE_ADMIN';
+    const ROLE_USER = 'ROLE_USER';
+
+    const AVAILABLE_ROLES = [
+        self::ROLE_USER,
+        self::ROLE_ADMIN,
+    ];
     /**
      * @ORM\Id()
      * @ORM\Column(type="uuid", unique=true)
@@ -113,7 +120,7 @@ class User implements UserInterface
 
     public function setRoles(array $roles): self
     {
-        $this->roles = $roles;
+        $this->roles = array_unique($roles);
 
         return $this;
     }
