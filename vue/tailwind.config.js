@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-const defaultTheme = require('tailwindcss/defaultTheme');
-
 module.exports = {
   purge: [
     './src/**/*.vue',
@@ -8,8 +5,10 @@ module.exports = {
   ],
   theme: {
     extend: {
+      width: {
+        82: '20rem',
+      },
       colors: {
-        ...defaultTheme.colors,
         placeholder: {
           default: 'rgba(51, 51, 51, .75)',
         },

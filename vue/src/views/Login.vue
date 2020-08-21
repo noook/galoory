@@ -1,8 +1,11 @@
 <template>
   <div class="login">
-    <div class="with-bg">
-      <img src="@/assets/img/louisethb-logo.svg" alt="louisethb logo">
-      <form @submit.prevent="login">
+    <div class="with-bg md:w-3/5">
+      <img
+        class="md:w-82"
+        src="@/assets/img/louisethb-logo.svg"
+        alt="louisethb logo">
+      <form class="md:hidden" @submit.prevent="login">
         <input
           v-model="credentials.username"
           placeholder="Nom d'utilisateur"
@@ -18,11 +21,36 @@
             class="btn bg-white text-indigo my-2">
             Se connecter
           </button>
-          <div v-if="error !== null" class="error">
+          <div v-if="error !== null" class="error bg-white rounded">
             <span v-if="error.code === 401">
               Identifiants invalides
             </span>
           </div>
+        </div>
+      </form>
+    </div>
+    <div class="hidden w-2/5 md:flex justify-center items-center">
+      <form class="flex flex-col" @submit.prevent="login">
+        <h1 class="text-3xl font-semibold mb-6">
+          Se connecter
+        </h1>
+        <div class="form-row">
+          <label for="username">Email</label>
+          <input id="username" v-model="credentials.username" type="text">
+        </div>
+        <div class="form-row">
+          <label for="password">Mot de passe</label>
+          <input id="password" v-model="credentials.password" type="password">
+        </div>
+        <div v-if="error !== null" class="error">
+          <span v-if="error.code === 401">
+            Identifiants invalides
+          </span>
+        </div>
+        <div class="flex justify-center mt-2">
+          <button :disabled="!canSubmit" type="submit" class="btn primary">
+            Connexion
+          </button>
         </div>
       </form>
     </div>
@@ -79,14 +107,14 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .login {
-  @apply h-screen;
+  @apply h-screen flex;
 }
 
 .with-bg {
   @apply h-full;
   background-image: url('~@/assets/img/login-background.jpg');
   background-position: 33% center;
-  @apply flex flex-col items-center;
+  @apply flex flex-col items-center justify-center;
   @apply p-12;
 }
 
@@ -97,6 +125,10 @@ input {
 
 .error {
   @apply my-2 px-2 h-8 text-sm;
-  @apply flex items-center bg-white rounded;
+  @apply flex items-center;
+}
+
+.form-row {
+  @apply flex flex-col mt-2 w-64;
 }
 </style>
