@@ -1,18 +1,19 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
+    <pre>{{ JSON.stringify(tokenInfo, null, 2) }}</pre>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
+import { tokenInfo } from '../composition/auth';
 
 export default defineComponent({
   name: 'Home',
-  components: {
-    HelloWorld,
+  setup() {
+    return {
+      tokenInfo,
+    };
   },
 });
 </script>

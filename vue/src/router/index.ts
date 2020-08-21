@@ -1,19 +1,45 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
-import Home from '../views/Home.vue';
+import LoggedLayout from '@/layouts/Logged.vue';
+import UnloggedLayout from '@/layouts/Unlogged.vue';
+import Home from '@/views/Home.vue';
 
-const routes: Array<RouteRecordRaw> = [
+import { isAuthenticated, revokeToken } from '@/composition/auth';
+
+const routes: RouteRecordRaw[] = [
   {
+    component: LoggedLayout,
     path: '/',
-    name: 'Home',
-    component: Home,
+    redirect: { name: 'home' },
+    beforeEnter(to, from, next) {
+      if (isAuthenticated.value === false) {
+        revokeToken();
+
+        return next({ name: 'login' });
+      }
+      return next();
+    },
+    children: [
+      { path: 'home', name: 'home', component: Home },
+      { path: '/:catchAll(.*)', redirect: { name: 'home' } },
+    ],
   },
   {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
+    component: UnloggedLayout,
+    path: '/',
+    beforeEnter(to, from, next) {
+      if (isAuthenticated.value === true) {
+        return next({ name: 'home' });
+        return next();
+      }
+      return next();
+    },
+    children: [
+      {
+        path: 'login',
+        name: 'login',
+        component: () => import(/* webpackChunkName: "login" */ '@/views/Login.vue'),
+      },
+    ],
   },
 ];
 

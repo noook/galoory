@@ -1,0 +1,84 @@
+@import './tailwind.css';
+
+button:focus {
+  @apply outline-none
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background-color: #ccc;
+}
+::-webkit-scrollbar-thumb {
+  background-color: #777;
+}
+
+input {
+  @apply h-8 text-xs;
+  @apply border border-gray-border rounded;
+
+  &::placeholder {
+    @apply text-placeholder;
+  }
+
+  &.icon-left {
+    @apply pl-8;
+    @apply bg-no-repeat;
+    background-position: 8px center;
+    background-size: 16px;
+  }
+
+  &:focus {
+    @apply outline-none;
+    box-shadow: 0 0 5px 1px theme('colors.indigo.default');
+  }
+}
+
+.dot {
+  @apply h-2 w-2 rounded-full;
+}
+
+.error {
+  @apply text-red-600;
+}
+
+.btn {
+  @apply border rounded h-8 px-4;
+  @apply font-medium text-sm;
+  transition-property: width, border, background, color, opacity;
+  @apply duration-300;
+
+
+  &.primary {
+    @apply border-indigo bg-indigo text-white;
+
+    &:hover {
+      @apply opacity-50;
+    }
+  }
+
+  &.secondary {
+    @apply text-indigo bg-white;
+    @apply border-indigo;
+
+    &:hover {
+      @apply bg-indigo text-white;
+    }
+  }
+
+  &:disabled {
+    @apply bg-gray cursor-not-allowed border border-gray;
+  }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity .3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
