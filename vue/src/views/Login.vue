@@ -29,7 +29,7 @@
         </div>
       </form>
     </div>
-    <div class="hidden w-2/5 md:flex justify-center items-center">
+    <div class="hidden md:w-2/5 md:flex justify-center items-center">
       <form class="flex flex-col" @submit.prevent="login">
         <h1 class="text-3xl font-semibold mb-6">
           Se connecter
@@ -111,7 +111,7 @@ export default defineComponent({
 }
 
 .with-bg {
-  @apply h-full;
+  @apply h-full flex-grow;
   background-image: url('~@/assets/img/login-background.jpg');
   background-position: 33% center;
   @apply flex flex-col items-center justify-center;

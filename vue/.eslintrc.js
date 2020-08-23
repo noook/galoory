@@ -1,3 +1,5 @@
+const { resolve } = require('path');
+
 module.exports = {
   root: true,
   env: {
@@ -16,6 +18,7 @@ module.exports = {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'arrow-body-style': 'off',
+    '@typescript-eslint/no-non-null-assertion': 'off',
     'import/prefer-default-export': 'off',
     'vue/html-closing-bracket-newline': 'off',
     'vue/max-attributes-per-line': ['error', {
@@ -27,4 +30,14 @@ module.exports = {
     }],
     'arrow-parens': 'off',
   },
+  settings: {
+    'import/resolver': {
+      alias: {
+        map: [
+          ['@', resolve(__dirname, 'src')],
+        ],
+        extensions: ['.js', '.ts', '.vue', '.json']
+      }
+    }
+  }
 };

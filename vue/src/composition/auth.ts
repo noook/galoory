@@ -57,24 +57,31 @@ function hasTokenExpired(checkToken: Ref<string>) {
   return getExpiracy(checkToken) < Date.now();
 }
 
-export const tokenInfo = computed<JWT>(() => {
+export const tokenInfo = computed<JWT | null>(() => {
   if (isTokenValid(token) && !hasTokenExpired(token)) {
     return readJWT(token);
   }
-
-  throw new Error('Token not valid');
+  return null;
 });
 
 export const isAuthenticated = computed<boolean>(() => {
   return isTokenValid(token) && !hasTokenExpired(token);
 });
 
+export const isAdmin = computed<boolean>(() => {
+  return isAuthenticated.value === true
+   && tokenInfo.value!.roles.includes('ROLE_ADMIN');
+});
+
 export default {
   token,
-  setToken,
   tokenInfo,
   getExpiracy,
   isTokenValid,
+
+  setToken,
   revokeToken,
+
   isAuthenticated,
+  isAdmin,
 };
