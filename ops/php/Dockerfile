@@ -17,6 +17,8 @@ RUN docker-php-ext-install \
   zip \
   pdo_pgsql
 
+COPY php.ini /usr/local/etc/php/conf.d
+
 COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
 RUN composer config -g github-oauth.github.com ${GITHUB_TOKEN}
