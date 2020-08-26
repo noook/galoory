@@ -28,5 +28,9 @@ export default defineComponent({
     @apply fixed top-0 left-0 right-0 h-16;
     @apply bg-black;
   }
+
+  .gutter {
+    @apply md:mx-16 md:my-12;
+  }
 }
 </style>

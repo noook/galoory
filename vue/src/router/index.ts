@@ -1,9 +1,18 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
+import {
+  createRouter, createWebHistory, RouteRecordRaw, NavigationGuardNext,
+} from 'vue-router';
 import LoggedLayout from '@/layouts/Logged.vue';
 import UnloggedLayout from '@/layouts/Unlogged.vue';
 import Home from '@/views/Home.vue';
 
-import { isAuthenticated, revokeToken } from '@/composition/auth';
+import { isAuthenticated, revokeToken, isAdmin } from '@/composition/auth';
+
+function adminRequired(required: boolean, redirect: string, next: NavigationGuardNext): void {
+  if (isAdmin.value === required) {
+    return next({ name: redirect });
+  }
+  return next();
+}
 
 const routes: RouteRecordRaw[] = [
   {
@@ -19,7 +28,38 @@ const routes: RouteRecordRaw[] = [
       return next();
     },
     children: [
-      { path: 'home', name: 'home', component: Home },
+      {
+        path: 'home',
+        name: 'home',
+        component: Home,
+        beforeEnter(to, from, next) {
+          return adminRequired(true, 'accounts', next);
+        },
+      },
+      {
+        path: 'accounts',
+        name: 'accounts',
+        component: () => import(/* webpackChunkName: 'accounts' */ '@/views/Accounts.vue'),
+        beforeEnter(to, from, next) {
+          return adminRequired(false, 'home', next);
+        },
+      },
+      {
+        path: 'photoshoots/new',
+        name: 'photoshoot-new',
+        component: () => import(/* webpackChunkName: 'account-detail' */ '@/views/AccountDetail.vue'),
+        beforeEnter(to, from, next) {
+          return adminRequired(false, 'home', next);
+        },
+      },
+      {
+        path: 'photoshoots/:photoshootId',
+        name: 'photoshoot-detail',
+        component: () => import(/* webpackChunkName: 'account-detail' */ '@/views/AccountDetail.vue'),
+        beforeEnter(to, from, next) {
+          return adminRequired(false, 'home', next);
+        },
+      },
       { path: '/:catchAll(.*)', redirect: { name: 'home' } },
     ],
   },
@@ -29,7 +69,6 @@ const routes: RouteRecordRaw[] = [
     beforeEnter(to, from, next) {
       if (isAuthenticated.value === true) {
         return next({ name: 'home' });
-        return next();
       }
       return next();
     },

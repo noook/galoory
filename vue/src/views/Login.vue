@@ -31,7 +31,7 @@
     </div>
     <div class="hidden md:w-2/5 md:flex justify-center items-center">
       <form class="flex flex-col" @submit.prevent="login">
-        <h1 class="text-3xl font-semibold mb-6">
+        <h1>
           Se connecter
         </h1>
         <div class="form-row">

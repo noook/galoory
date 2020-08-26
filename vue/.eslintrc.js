@@ -20,6 +20,7 @@ module.exports = {
     'arrow-body-style': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
     'import/prefer-default-export': 'off',
+    'class-methods-use-this': 'off',
     'vue/html-closing-bracket-newline': 'off',
     'vue/max-attributes-per-line': ['error', {
       'singleline': 3,

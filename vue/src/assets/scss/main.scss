@@ -2,6 +2,7 @@
 
 html, body {
   font-family: 'Lato';
+  height: 100%;
 }
 
 button:focus {
@@ -19,8 +20,18 @@ button:focus {
   background-color: #777;
 }
 
+img.icon {
+  @apply w-4 h-4;
+}
+img.icon-lg {
+  @apply w-6 h-6;
+}
+img.icon-xl {
+  @apply w-8 h-8;
+}
+
 input {
-  @apply h-8 text-xs;
+  @apply h-8 px-2 text-xs;
   @apply border border-gray-border rounded;
 
   &::placeholder {
@@ -36,7 +47,7 @@ input {
 
   &:focus {
     @apply outline-none;
-    box-shadow: 0 0 5px 1px theme('colors.indigo.default');
+    box-shadow: 0 0 3px 1px theme('colors.indigo.default');
   }
 }
 
@@ -74,6 +85,57 @@ input {
 
   &:disabled {
     @apply bg-gray cursor-not-allowed border border-gray;
+  }
+}
+
+.actions {
+  @apply flex items-center justify-center;
+
+  button { 
+    @apply px-4 h-8 flex items-center;
+    @apply rounded duration-200;
+
+    &:not(:first-child) {
+      @apply ml-2;
+    }
+    
+    &:hover {
+      @apply bg-indigo-200
+    }
+  }
+}
+
+h1 {
+  @apply text-3xl font-semibold mb-6;
+}
+
+table {
+  @apply border-collapse w-full;
+
+  thead {
+    @apply border-b border-gray-border;
+  }
+
+  tbody {
+    tr {
+      @apply duration-150;
+
+      &:hover {
+        @apply bg-lightgray-300;
+      }
+    }
+  }
+
+  td, th {
+    @apply px-2;
+  }
+
+  th {
+    @apply text-left text-gray-400 font-normal;
+  }
+
+  td {
+    @apply h-10;
   }
 }
 

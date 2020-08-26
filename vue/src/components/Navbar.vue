@@ -109,7 +109,7 @@ export default defineComponent({
 
 <style scoped lang="scss">
 .navbar {
-  @apply flex;
+  @apply flex z-20;
 
   .body .router-link-active {
     @apply relative font-bold;
@@ -160,7 +160,7 @@ export default defineComponent({
   }
 
   .desktop {
-    @apply flex justify-between items-center;
+    @apply hidden md:flex justify-between items-center;
     @apply px-16 py-1;
   }
 }
