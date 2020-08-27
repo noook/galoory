@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Action\CreatePhotoshoot;
 use App\Action\CreateUser;
+use App\Action\DeletePhotoshoot;
 use App\Action\SaveFile;
 use App\Entity\PhotoShoot;
 use App\Form\UserRegisterType;
@@ -126,6 +127,28 @@ class PhotoShootController extends AbstractController
             JsonResponse::HTTP_OK,
             [],
             ['groups' => ['photoshoot', 'user', 'photo-package']]
+        );
+    }
+
+    /**
+     * @Route("/photoshoot/{photoshoot}", name="delete-photoshoot", methods={"DELETE"})
+     * @ParamConverter("photoshoot", class="App\Entity\PhotoShoot")
+     */
+    public function deletePhotoshoot(PhotoShoot $photoshoot, MessageBusInterface $bus): JsonResponse
+    {
+        try {
+            $envelope = $bus->dispatch(new DeletePhotoshoot($photoshoot));
+            $result = $envelope->last(HandledStamp::class)->getResult();
+        } catch (\Exception $e) {
+            return $this->json([
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+        return $this->json(
+            null,
+            JsonResponse::HTTP_NO_CONTENT,
+            [],
         );
     }
 

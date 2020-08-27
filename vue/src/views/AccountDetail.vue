@@ -138,7 +138,7 @@ export default defineComponent({
     const route = useRoute();
     const isNewPhotoshoot = route.name === 'photoshoot-new';
     const editMode = ref(isNewPhotoshoot);
-    const { getPhotoshoot, newPhotoshoot, saveFiles } = usePhotoshootRepository();
+    const { get: getPhotoshoot, create, saveFiles } = usePhotoshootRepository();
     const { packages } = usePhotoPackageRepository({ fetch: true });
 
     const photoshoot = ref<Partial<Photoshoot> | null>(null);
@@ -177,20 +177,19 @@ export default defineComponent({
       }
     }
 
-    function savePhotoshoot(event: Event) {
-      console.log(event);
+    function savePhotoshoot() {
       if (isNewPhotoshoot) {
         if (!photoshoot.value?.package) {
           return;
         }
-        newPhotoshoot({
+        create({
           user: form.value,
           package: photoshoot.value.package.id,
           expiration: photoshoot.value.expiration!,
         })
           .then(shoot => saveFiles(shoot, fileHandler.files.value))
-          .then(response => {
-            console.log(response);
+          .then(() => {
+            console.log('@todo redirect somewhere');
           });
       }
     }

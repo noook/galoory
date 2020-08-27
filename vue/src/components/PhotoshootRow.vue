@@ -13,7 +13,9 @@
             Voir
           </button>
         </router-link>
-        <button>Archiver</button>
+        <button @click="deletePhotoshoot">
+          Archiver
+        </button>
       </div>
     </td>
   </tr>
@@ -21,6 +23,7 @@
 
 <script lang="ts">
 import { defineComponent, computed } from 'vue';
+import usePhotoshootRepository from '@/api/repositories/photoshoot';
 import { toDMY } from '@/filters';
 import { Photoshoot } from '@/types/models';
 
@@ -39,7 +42,8 @@ export default defineComponent({
       type: Object as () => Photoshoot,
     },
   },
-  setup(props) {
+  emits: ['delete'],
+  setup(props, { emit }) {
     const customerFullname = computed(() => {
       const { customer } = props.photoshoot;
       return `${customer.firstname} ${customer.lastname}`;
@@ -52,9 +56,17 @@ export default defineComponent({
       },
     }));
 
+    const { remove: removeShoot } = usePhotoshootRepository();
+    function deletePhotoshoot() {
+      return removeShoot(props.photoshoot)
+        .then(() => emit('delete', props.photoshoot));
+    }
+
     return {
       customerFullname,
       detailRoute,
+
+      deletePhotoshoot,
 
       toDMY,
     };

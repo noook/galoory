@@ -13,14 +13,14 @@ export default function usePhotoshootRepository() {
     expiration: new Date(expiration),
   });
 
-  function getPhotoshoot(id: string): Promise<Photoshoot> {
+  function get(id: string): Promise<Photoshoot> {
     return api.get<PhotoshootDTO>(routeMap.get(ROUTES.PHOTOSHOOT, {
       photoshoot: id,
     }))
       .then(({ data }) => dtoTransformer(data));
   }
 
-  function getPhotoshoots(): Promise<Photoshoot[]> {
+  function list(): Promise<Photoshoot[]> {
     return api.get<PhotoshootDTO[]>(routeMap.get(ROUTES.PHOTOSHOOTS))
       .then(({ data }) => {
         photoshoots.value = data.map(dtoTransformer);
@@ -29,7 +29,7 @@ export default function usePhotoshootRepository() {
       });
   }
 
-  function newPhotoshoot(payload: NewPhotoshoot): Promise<Photoshoot> {
+  function create(payload: NewPhotoshoot): Promise<Photoshoot> {
     const formattedPayload = (({ expiration, ...rest }) => ({
       ...rest,
       expiration: expiration.toISOString(),
@@ -39,14 +39,16 @@ export default function usePhotoshootRepository() {
       .then(({ data }) => dtoTransformer(data));
   }
 
+  function remove(shoot: Photoshoot): Promise<void> {
+    return api.delete(routeMap.get(ROUTES.PHOTOSHOOT, { photoshoot: shoot.id }));
+  }
+
   function saveFiles(shoot: Photoshoot, files: FileInterface[]) {
     const formData: FormData = files.reduce((acc, file, index) => {
       acc.set(`files[${index}]`, file.file);
 
       return acc;
     }, new FormData());
-
-    console.log(formData);
 
     return api.post(routeMap.get(ROUTES.PHOTOSHOOT_FILES, { photoshoot: shoot.id }), formData)
       .then(({ data }) => data);
@@ -55,10 +57,11 @@ export default function usePhotoshootRepository() {
   return {
     photoshoots,
 
-    getPhotoshoot,
-    getPhotoshoots,
+    get,
+    list,
 
-    newPhotoshoot,
+    create,
+    remove,
     saveFiles,
   };
 }

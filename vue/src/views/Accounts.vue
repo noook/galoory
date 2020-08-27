@@ -22,7 +22,8 @@
         <PhotoshootRow
           v-for="photoshoot in photoshoots"
           :key="photoshoot.id"
-          :photoshoot="photoshoot" />
+          :photoshoot="photoshoot"
+          @delete="removePhotoshoot" />
       </tbody>
     </table>
   </div>
@@ -33,16 +34,27 @@ import { defineComponent } from 'vue';
 import usePhotoshootRepository from '@/api/repositories/photoshoot';
 
 import PhotoshootRow from '@/components/PhotoshootRow.vue';
+import { Photoshoot } from '@/types/models';
 
 export default defineComponent({
   name: 'Accounts',
   components: { PhotoshootRow },
   setup() {
     const repository = usePhotoshootRepository();
-    repository.getPhotoshoots();
+    repository.list();
+
+    function removePhotoshoot(photoshoot: Photoshoot) {
+      const { photoshoots } = repository;
+      photoshoots.value.splice(
+        photoshoots.value.findIndex(({ id }) => id === photoshoot.id),
+        1,
+      );
+    }
 
     return {
       photoshoots: repository.photoshoots,
+
+      removePhotoshoot,
     };
   },
 });

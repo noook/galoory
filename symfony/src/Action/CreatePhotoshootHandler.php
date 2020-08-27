@@ -19,7 +19,7 @@ class CreatePhotoshootHandler implements MessageHandlerInterface
     )
     {
         $this->entityManager = $entityManager;
-        $this->uploadsDirectory = realpath($bag->get('kernel.project_dir') . '/uploads');
+        $this->uploadsDirectory = realpath($bag->get('uploads_dir'));
     }
 
     public function __invoke(CreatePhotoshoot $command): PhotoShoot
