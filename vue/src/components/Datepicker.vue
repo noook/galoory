@@ -174,7 +174,6 @@ export default defineComponent({
     }
 
     function select(date: DayInMonth) {
-      console.log(date);
       emit('update:modelValue', new Date(date.year, date.month - 1, date.day));
       if (!props.keepOpen) {
         opened.value = false;
