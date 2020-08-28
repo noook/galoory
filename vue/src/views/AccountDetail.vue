@@ -98,7 +98,8 @@
                   name="files"
                   accept=".jpg,.zip,.jpeg,.png.jpf,.webp"
                   hidden
-                  multiple>
+                  multiple
+                  @input="addFile">
               </label>
             </div>
             <div class="flex justify-center my-8">
@@ -217,6 +218,7 @@ export default defineComponent({
         })
           .then(shoot => saveFiles(shoot, fileHandler.files.value))
           .then(shoot => {
+            fileHandler.clear();
             editMode.value = false;
             router.push({
               name: 'photoshoot-detail',
@@ -231,7 +233,9 @@ export default defineComponent({
           package: photoshoot.value!.package!.id,
           expiration: photoshoot.value!.expiration!,
         })
-          .then((shoot) => {
+          .then(shoot => saveFiles(shoot, fileHandler.files.value))
+          .then(shoot => {
+            fileHandler.clear();
             editMode.value = false;
             photoshoot.value = shoot;
           })
