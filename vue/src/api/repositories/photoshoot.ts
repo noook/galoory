@@ -13,6 +13,11 @@ export default function usePhotoshootRepository() {
     expiration: new Date(expiration),
   });
 
+  const payloadTransformer = ({ expiration, ...rest }: Photoshoot | NewPhotoshoot) => ({
+    ...rest,
+    expiration: expiration.toISOString(),
+  });
+
   function get(id: string): Promise<Photoshoot> {
     return api.get<PhotoshootDTO>(routeMap.get(ROUTES.PHOTOSHOOT, {
       photoshoot: id,
@@ -30,10 +35,7 @@ export default function usePhotoshootRepository() {
   }
 
   function create(payload: NewPhotoshoot): Promise<Photoshoot> {
-    const formattedPayload = (({ expiration, ...rest }) => ({
-      ...rest,
-      expiration: expiration.toISOString(),
-    }))(payload);
+    const formattedPayload = payloadTransformer(payload);
 
     return api.post<PhotoshootDTO>(routeMap.get(ROUTES.PHOTOSHOOTS), formattedPayload)
       .then(({ data }) => dtoTransformer(data));
@@ -43,7 +45,19 @@ export default function usePhotoshootRepository() {
     return api.delete(routeMap.get(ROUTES.PHOTOSHOOT, { photoshoot: shoot.id }));
   }
 
-  function saveFiles(shoot: Photoshoot, files: FileInterface[]) {
+  function update(id: string, payload: NewPhotoshoot): Promise<Photoshoot> {
+    const transformedPayload = payloadTransformer(payload);
+
+    return api.put<PhotoshootDTO>(
+      routeMap.get(ROUTES.PHOTOSHOOT, { photoshoot: id }),
+      transformedPayload,
+    )
+      .then(({ data }) => {
+        return dtoTransformer(data);
+      });
+  }
+
+  function saveFiles(shoot: Photoshoot, files: FileInterface[]): Promise<Photoshoot> {
     const formData: FormData = files.reduce((acc, file, index) => {
       acc.set(`files[${index}]`, file.file);
 
@@ -51,7 +65,7 @@ export default function usePhotoshootRepository() {
     }, new FormData());
 
     return api.post(routeMap.get(ROUTES.PHOTOSHOOT_FILES, { photoshoot: shoot.id }), formData)
-      .then(({ data }) => data);
+      .then(() => shoot);
   }
 
   return {
@@ -62,6 +76,7 @@ export default function usePhotoshootRepository() {
 
     create,
     remove,
+    update,
     saveFiles,
   };
 }

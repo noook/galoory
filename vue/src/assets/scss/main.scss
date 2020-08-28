@@ -88,6 +88,11 @@ input {
   }
 }
 
+div.warn {
+  @apply border;
+  border-color: theme('colors.orange.500') !important;
+}
+
 .actions {
   @apply flex items-center justify-center;
 

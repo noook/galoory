@@ -8,7 +8,25 @@
     </router-link>
     <main>
       <div class="left">
-        <h1>Détails du compte</h1>
+        <h1>
+          <span>Détails du compte</span>
+          <template v-if="!isNewPhotoshoot">
+            <button
+              v-if="editMode"
+              class="w-3 ml-2 leading-3 text-2xl"
+              title="Annuler les modifications"
+              @click="editMode = false">
+              &times;
+            </button>
+            <button
+              v-else
+              class="w-3 ml-2"
+              title="Modifier le compte"
+              @click="editMode = true">
+              <img src="@/assets/svg/pen.svg" alt="pen">
+            </button>
+          </template>
+        </h1>
         <form v-if="photoshoot !== null" class="grid" @submit.prevent="savePhotoshoot">
           <div class="fields">
             <div class="form-input">
@@ -37,7 +55,10 @@
             </div>
             <div class="form-input">
               <label>Formule</label>
-              <Dropdown :disabled="!editMode" @select="setPackage">
+              <Dropdown
+                :class="{ warn: packageMissing }"
+                :disabled="!editMode"
+                @select="setPackage">
                 <template #value>
                   {{ photoshoot.package ? photoshoot.package.name : '-' }}
                 </template>
@@ -91,7 +112,7 @@
       <div class="separator" />
       <div class="right">
         <h2 class="text-2xl font-bold mb-5">
-          Fichiers
+          Fichiers à ajouter ({{ files.length }})
         </h2>
         <p class="text-gray-400 text-sm mb-5">
           Limité à 15 photos. Passer par une archive .zip pour aller au dela de la limite.
@@ -116,8 +137,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
-import { useRoute } from 'vue-router';
+import { defineComponent, ref, computed } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { Photoshoot, PhotoPackage } from '@/types/models';
 import usePhotoshootRepository from '@/api/repositories/photoshoot';
 import usePhotoPackageRepository from '@/api/repositories/photo-package';
@@ -136,13 +157,18 @@ export default defineComponent({
   },
   setup() {
     const route = useRoute();
-    const isNewPhotoshoot = route.name === 'photoshoot-new';
-    const editMode = ref(isNewPhotoshoot);
-    const { get: getPhotoshoot, create, saveFiles } = usePhotoshootRepository();
+    const router = useRouter();
+    const isNewPhotoshoot = computed<boolean>(() => route.name === 'photoshoot-new');
+    const editMode = ref(isNewPhotoshoot.value);
+    const {
+      get: getPhotoshoot, update, create, saveFiles,
+    } = usePhotoshootRepository();
     const { packages } = usePhotoPackageRepository({ fetch: true });
+    const packageMissing = ref(false);
 
     const photoshoot = ref<Partial<Photoshoot> | null>(null);
     function setPackage(pkg: PhotoPackage) {
+      packageMissing.value = false;
       photoshoot.value!.package = pkg;
     }
 
@@ -169,7 +195,7 @@ export default defineComponent({
       }
     }
 
-    function typeofFile(file: FileInterface) {
+    function typeofFile(file: FileInterface): string {
       const extension = file.file.name.split('.').pop();
       switch (extension) {
         case 'zip': return zipIcon;
@@ -178,8 +204,10 @@ export default defineComponent({
     }
 
     function savePhotoshoot() {
-      if (isNewPhotoshoot) {
+      packageMissing.value = false;
+      if (isNewPhotoshoot.value) {
         if (!photoshoot.value?.package) {
+          packageMissing.value = true;
           return;
         }
         create({
@@ -188,9 +216,26 @@ export default defineComponent({
           expiration: photoshoot.value.expiration!,
         })
           .then(shoot => saveFiles(shoot, fileHandler.files.value))
-          .then(() => {
-            console.log('@todo redirect somewhere');
+          .then(shoot => {
+            editMode.value = false;
+            router.push({
+              name: 'photoshoot-detail',
+              params: {
+                photoshootId: shoot.id,
+              },
+            });
           });
+      } else {
+        update(photoshoot.value!.id!, {
+          user: form.value,
+          package: photoshoot.value!.package!.id,
+          expiration: photoshoot.value!.expiration!,
+        })
+          .then((shoot) => {
+            editMode.value = false;
+            photoshoot.value = shoot;
+          })
+          .catch(console.error);
       }
     }
 
@@ -212,6 +257,7 @@ export default defineComponent({
       packages,
       editMode,
       isNewPhotoshoot,
+      packageMissing,
 
       isDraggingOver,
       files: fileHandler.files,

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Action\CreatePhotoshoot;
 use App\Action\CreateUser;
 use App\Action\DeletePhotoshoot;
+use App\Action\EditPhotoshoot;
 use App\Action\SaveFile;
 use App\Entity\PhotoShoot;
 use App\Form\UserRegisterType;
@@ -15,6 +16,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\HandledStamp;
 use Symfony\Component\Routing\Annotation\Route;
@@ -128,6 +130,63 @@ class PhotoShootController extends AbstractController
             [],
             ['groups' => ['photoshoot', 'user', 'photo-package']]
         );
+    }
+
+    /**
+     * @Route("/photoshoot/{photoshoot}", name="edit-photoshoot", methods={"PUT"})
+     * @ParamConverter("photoshoot", class="App\Entity\PhotoShoot")
+     */
+    public function editPhotoshoot(
+        Request $request,
+        PhotoShoot $photoshoot,
+        PhotoPackageRepository $photoPackageRepository,
+        MessageBusInterface $bus
+    ): JsonResponse
+    {
+        $payload = \json_decode($request->getContent(), true);
+
+        $requiredFields = ['user', 'package', 'expiration'];
+        
+        foreach ($requiredFields as $field) {
+            if (!isset($payload[$field])) {
+                return $this->json([
+                    'message' => sprintf('Missing field "%s"', $field),
+                ], JsonResponse::HTTP_BAD_REQUEST);
+            }
+        }
+
+        $package = $photoPackageRepository->find($payload['package']);
+
+        if (null === $package) {
+            return $this->json([
+                'message' => sprintf('Invalid value "%s" for field "package"', $payload['package']),
+            ], JsonResponse::HTTP_BAD_REQUEST);
+        }
+
+        $expiration = new \DateTime($payload['expiration']);
+
+        try {
+            $envelope = $bus->dispatch(
+                new EditPhotoshoot(
+                    $photoshoot,
+                    $package,
+                    $payload['user'],
+                    $expiration
+                )
+            );
+            $photoshoot = $envelope->last(HandledStamp::class)->getResult();
+
+            return $this->json(
+                $photoshoot,
+                JsonResponse::HTTP_OK,
+                [],
+                ['groups' => ['photoshoot', 'user', 'photo-package']]
+            );
+        } catch (\Exception $e) {
+            return $this->json([
+                'message' => $e->getMessage(),
+            ], JsonResponse::HTTP_CONFLICT);
+        }
     }
 
     /**

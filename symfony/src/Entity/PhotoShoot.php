@@ -29,7 +29,7 @@ class PhotoShoot
     private User $customer;
 
     /**
-     * @ORM\Column(type="date", nullable=true)
+     * @ORM\Column(type="datetime", nullable=true)
      * @Groups({"photoshoot"})
      */
     private \DateTime $expiration;

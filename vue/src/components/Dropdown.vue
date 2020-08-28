@@ -88,22 +88,20 @@ export default defineComponent({
   @apply w-full;
   top: 100%;
 
-  ::v-deep {
-    ul {
-      max-height: 250px;
-      @apply overflow-y-auto;
+  ::v-deep(ul) {
+    max-height: 250px;
+    @apply overflow-y-auto;
 
-      li {
-        @apply px-4 py-2;
-        @apply cursor-pointer;
+    li {
+      @apply px-4 py-2;
+      @apply cursor-pointer;
 
-        &:hover {
-          @apply bg-lightgray-300;
-        }
+      &:hover {
+        @apply bg-lightgray-300;
+      }
 
-        &:not(:last-child) {
-          @apply border-b border-gray-border;
-        }
+      &:not(:last-child) {
+        @apply border-b border-gray-border;
       }
     }
   }
