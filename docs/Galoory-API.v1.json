@@ -136,7 +136,7 @@
     "/login": {
       "post": {
         "summary": "Login",
-        "operationId": "post-login",
+        "operationId": "api_login_check",
         "responses": {
           "200": {
             "description": "OK",
@@ -263,7 +263,7 @@
             }
           }
         },
-        "operationId": "get-photo-package",
+        "operationId": "photoshoot-package-list",
         "description": "Lists Photo packages"
       }
     },
@@ -291,7 +291,7 @@
       },
       "post": {
         "summary": "New Photoshoot",
-        "operationId": "post-photoshoot",
+        "operationId": "new-photoshoot",
         "responses": {
           "201": {
             "description": "Created",
@@ -469,6 +469,102 @@
           },
           "description": "Attach files, up to 15 to the `files[]` key. Use `.zip` archives to upload more than 15 files."
         }
+      }
+    },
+    "/photoshoot/{photoshootId}": {
+      "parameters": [
+        {
+          "schema": {
+            "type": "string"
+          },
+          "name": "photoshootId",
+          "in": "path",
+          "required": true
+        }
+      ],
+      "get": {
+        "summary": "Photoshoot detail",
+        "tags": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Photoshoot"
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get-photoshoot",
+        "description": "Returns a single photoshoot"
+      },
+      "put": {
+        "summary": "Photoshoot Edit",
+        "operationId": "edit-photoshoot",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "description": "Edits a photoshoot information along the customer's information",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user": {
+                    "type": "object",
+                    "required": [
+                      "firstname",
+                      "lastname",
+                      "email"
+                    ],
+                    "properties": {
+                      "firstname": {
+                        "type": "string"
+                      },
+                      "lastname": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string",
+                        "format": "email"
+                      }
+                    }
+                  },
+                  "package": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "expiration": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2020-08-28T19:38:51+00:00"
+                  }
+                },
+                "required": [
+                  "user",
+                  "package",
+                  "expiration"
+                ]
+              }
+            }
+          },
+          "description": ""
+        }
+      },
+      "delete": {
+        "summary": "Photoshoot Delete",
+        "operationId": "delete-photoshoot",
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "description": "Deletes a photoshoot and the user associated"
       }
     }
   },
