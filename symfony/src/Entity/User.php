@@ -53,9 +53,9 @@ class User implements UserInterface
     private string $password;
 
     /**
-     * @ORM\OneToMany(targetEntity=PhotoShoot::class, mappedBy="customer", orphanRemoval=true)
+     * @ORM\OneToOne(targetEntity=PhotoShoot::class, mappedBy="customer", orphanRemoval=true)
      */
-    private Collection $photoShoots;
+    private PhotoShoot $photoShoot;
 
     /**
      * @ORM\Column(type="string", length=100)
@@ -157,33 +157,14 @@ class User implements UserInterface
         // $this->plainPassword = null;
     }
 
-    /**
-     * @return Collection|PhotoShoot[]
-     */
-    public function getPhotoShoots(): Collection
+    public function getPhotoShoot(): PhotoShoot
     {
-        return $this->photoShoots;
+        return $this->photoShoot;
     }
 
-    public function addPhotoShoot(PhotoShoot $photoShoot): self
+    public function setPhotoshoot(PhotoShoot $photoShoot): self
     {
-        if (!$this->photoShoots->contains($photoShoot)) {
-            $this->photoShoots[] = $photoShoot;
-            $photoShoot->setCustomer($this);
-        }
-
-        return $this;
-    }
-
-    public function removePhotoShoot(PhotoShoot $photoShoot): self
-    {
-        if ($this->photoShoots->contains($photoShoot)) {
-            $this->photoShoots->removeElement($photoShoot);
-            // set the owning side to null (unless already changed)
-            if ($photoShoot->getCustomer() === $this) {
-                $photoShoot->setCustomer(null);
-            }
-        }
+        $this->photoShoot = $photoShoot;
 
         return $this;
     }

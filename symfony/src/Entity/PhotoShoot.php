@@ -22,7 +22,7 @@ class PhotoShoot
     private UuidInterface $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="photoShoots")
+     * @ORM\OneToOne(targetEntity=User::class, inversedBy="photoShoot")
      * @ORM\JoinColumn(nullable=false)
      * @Groups({"photoshoot"})
      */

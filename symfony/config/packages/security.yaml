@@ -27,6 +27,10 @@ security:
         api:
             pattern:   ^/
             stateless: true
+            lexik_jwt:
+                query_parameter:      # check token in query string parameter
+                    enabled: true
+                    name:    auth
             guard:
                 authenticators:
                     - lexik_jwt_authentication.jwt_token_authenticator

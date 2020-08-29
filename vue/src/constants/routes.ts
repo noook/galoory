@@ -3,4 +3,6 @@ export const ROUTES: Record<string, string> = {
   PHOTOSHOOTS: '/photoshoot',
   PHOTOSHOOT: '/photoshoot/{:photoshoot}',
   PHOTOSHOOT_FILES: '/photoshoot/{:photoshoot}/files',
+  PICTURES: '/pictures',
+  PICTURE: '/pictures/{:file}',
 };
