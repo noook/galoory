@@ -14,7 +14,7 @@
         </button>
         <div class="flex items-center mx-8">
           <input
-            v-model.number="currentIndex"
+            v-model.number.lazy="currentIndex"
             min="1"
             :max="totalItems"
             type="number"
@@ -34,8 +34,18 @@
             alt="Left arrow">
         </button>
       </div>
-      <div v-if="cachedPictures[currentIndex]" class="my-8 flex justify-center">
+      <div v-if="cachedPictures[currentIndex]" class="my-8 flex flex-col items-center">
         <img :src="currentRoute" :alt="cachedPictures[currentIndex]">
+        <div class="my-4">
+          <Checkbox :model-value="isSelected" @update:modelValue="updateSelection">
+            <label>Ajouter à la sélection</label>
+          </Checkbox>
+          <p
+            class="text-center my-2"
+            :class="{ 'font-semibold text-red-500': selection.selectedLength > selection.quota }">
+            {{ selection.selectedLength }}/{{ selection.quota }} sélectionnée(s)
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -43,18 +53,36 @@
 
 <script lang="ts">
 import {
-  defineComponent, ref, computed, watch, onMounted, onUnmounted,
+  defineComponent, ref, computed, watch, onMounted, onUnmounted, reactive,
 } from 'vue';
-import usePicturesRepository from '@/api/repositories/pictures';
 import { useRoute, useRouter } from 'vue-router';
+import usePicturesRepository from '@/api/repositories/pictures';
+import selection, { useSelection } from '@/store/selection';
+
+import Checkbox from '@/components/Checkbox.vue';
 
 export default defineComponent({
   name: 'PictureDetail',
+  components: { Checkbox },
   setup() {
     const route = useRoute();
     const router = useRouter();
-    const filename = route.params.pictureName;
+    const filename = computed(() => route.params.pictureName as string);
     let rangeRequest = Promise.resolve();
+
+    useSelection();
+
+    function updateSelection(value: boolean) {
+      if (value) {
+        selection.addToSelection(filename.value);
+      } else {
+        selection.removeFromSelection(filename.value);
+      }
+    }
+
+    const isSelected = computed(() => {
+      return selection.files.value.includes(filename.value);
+    });
 
     const {
       getRange,
@@ -64,6 +92,8 @@ export default defineComponent({
     const totalItems = ref(0);
     const cachedPictures = ref<Record<number, string>>({});
     const currentIndex = ref(0);
+    const currentRoute = computed(() => getStaticRoute(cachedPictures.value[currentIndex.value]));
+
     watch(currentIndex, async newVal => {
       await rangeRequest;
 
@@ -73,22 +103,6 @@ export default defineComponent({
         },
       });
     });
-
-    const currentRoute = computed(() => getStaticRoute(cachedPictures.value[currentIndex.value]));
-
-    getRange(filename as string)
-      .then(range => {
-        totalItems.value = range.total;
-        Object
-          .entries(range.results)
-          .forEach(([index, file]) => {
-            cachedPictures.value[+index] = file;
-
-            if (file === filename) {
-              currentIndex.value = +index;
-            }
-          });
-      });
 
     function goTo(index: number) {
       if (index < 1 || index > totalItems.value) return;
@@ -114,6 +128,20 @@ export default defineComponent({
       }
     }
 
+    getRange(filename.value)
+      .then(range => {
+        totalItems.value = range.total;
+        Object
+          .entries(range.results)
+          .forEach(([index, file]) => {
+            cachedPictures.value[+index] = file;
+
+            if (file === filename.value) {
+              currentIndex.value = +index;
+            }
+          });
+      });
+
     onMounted(() => {
       window.addEventListener('keydown', bindKeyEvents);
     });
@@ -122,6 +150,10 @@ export default defineComponent({
     });
 
     return {
+      isSelected,
+      updateSelection,
+      selection: reactive(selection),
+
       currentIndex,
       totalItems,
       cachedPictures,

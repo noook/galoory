@@ -35,3 +35,8 @@ export interface Photoshoot {
   status: PhotoshootStatus;
   package: PhotoPackage;
 }
+
+export interface NewSelectedPicture {
+  id: string;
+  filename: string;
+}

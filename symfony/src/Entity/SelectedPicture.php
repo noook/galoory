@@ -2,8 +2,10 @@
 
 namespace App\Entity;
 
-use App\Repository\SelectedPictureRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Nonstandard\Uuid;
+use Ramsey\Uuid\UuidInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=SelectedPictureRepository::class)
@@ -12,8 +14,8 @@ class SelectedPicture
 {
     /**
      * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="uuid", unique=true)
+     * @Groups({"selected-picture"})
      */
     private $id;
 
@@ -25,10 +27,16 @@ class SelectedPicture
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"selected-picture"})
      */
     private $filename;
 
-    public function getId(): ?int
+    public function __construct()
+    {
+        $this->id = Uuid::uuid4();
+    }
+
+    public function getId(): UuidInterface
     {
         return $this->id;
     }
