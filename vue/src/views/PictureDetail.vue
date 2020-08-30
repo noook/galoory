@@ -43,7 +43,7 @@
 
 <script lang="ts">
 import {
-  defineComponent, ref, computed, watch,
+  defineComponent, ref, computed, watch, onMounted, onUnmounted,
 } from 'vue';
 import usePicturesRepository from '@/api/repositories/pictures';
 import { useRoute, useRouter } from 'vue-router';
@@ -54,6 +54,7 @@ export default defineComponent({
     const route = useRoute();
     const router = useRouter();
     const filename = route.params.pictureName;
+    let rangeRequest = Promise.resolve();
 
     const {
       getRange,
@@ -63,7 +64,9 @@ export default defineComponent({
     const totalItems = ref(0);
     const cachedPictures = ref<Record<number, string>>({});
     const currentIndex = ref(0);
-    watch(currentIndex, newVal => {
+    watch(currentIndex, async newVal => {
+      await rangeRequest;
+
       router.replace({
         params: {
           pictureName: cachedPictures.value[newVal],
@@ -87,9 +90,10 @@ export default defineComponent({
           });
       });
 
-    async function goTo(index: number) {
+    function goTo(index: number) {
+      if (index < 1 || index > totalItems.value) return;
       if (!cachedPictures.value[index]) {
-        await getRange(index)
+        rangeRequest = getRange(index)
           .then(range => {
             Object
               .entries(range.results)
@@ -101,6 +105,21 @@ export default defineComponent({
 
       currentIndex.value = index;
     }
+
+    function bindKeyEvents({ code }: KeyboardEvent) {
+      if (code === 'ArrowLeft') {
+        goTo(currentIndex.value - 1);
+      } else if (code === 'ArrowRight') {
+        goTo(currentIndex.value + 1);
+      }
+    }
+
+    onMounted(() => {
+      window.addEventListener('keydown', bindKeyEvents);
+    });
+    onUnmounted(() => {
+      window.removeEventListener('keydown', bindKeyEvents);
+    });
 
     return {
       currentIndex,
