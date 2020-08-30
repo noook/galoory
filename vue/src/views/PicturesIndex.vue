@@ -16,11 +16,19 @@
       <Spinner class="w-16 h-16" />
     </div>
     <div class="grid gap-8 items-center">
-      <img
+      <router-link
         v-for="file in files.data"
         :key="file"
-        :src="getStaticRoute(file)"
-        :alt="file">
+        :to="{ name: 'picture-detail', params: { pictureName: file } }">
+        <div class="relative">
+          <img
+            :src="getStaticRoute(file)"
+            :alt="file">
+          <div class="picture-hover">
+            Voir
+          </div>
+        </div>
+      </router-link>
     </div>
     <div class="pagination">
       <button
@@ -59,7 +67,7 @@ import usePicturesRepository from '@/api/repositories/pictures';
 import { useRouter, useRoute } from 'vue-router';
 
 export default defineComponent({
-  name: 'Home',
+  name: 'PicturesIndex',
   setup() {
     const router = useRouter();
     const { page } = useRoute().query;
@@ -101,6 +109,16 @@ export default defineComponent({
   div.grid {
     @apply my-8 grid-cols-1 md:grid-cols-3;
     justify-items: center;
+  }
+}
+
+.picture-hover {
+  @apply flex items-center justify-center;
+  @apply absolute inset-0 opacity-0 duration-200;
+  @apply bg-black text-white text-2xl;
+
+  &:hover {
+    @apply opacity-75;
   }
 }
 

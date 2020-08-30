@@ -5,4 +5,5 @@ export const ROUTES = {
   PHOTOSHOOT_FILES: '/photoshoot/{:photoshoot}/files',
   PICTURES: '/pictures',
   PICTURE: '/pictures/{:file}',
+  PICTURE_RANGE: '/pictures/range',
 };

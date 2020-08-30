@@ -2,9 +2,6 @@
 
 namespace App\Controller;
 
-use App\Repository\UserRepository;
-use Lexik\Bundle\JWTAuthenticationBundle\Security\Guard\JWTTokenAuthenticator;
-use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Finder\Finder;
@@ -12,11 +9,11 @@ use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class PictureController extends AbstractController
 {
     private string $uploadDir;
+    const PER_PAGE = 18;
 
     public function __construct(ParameterBagInterface $bag)
     {
@@ -26,17 +23,9 @@ class PictureController extends AbstractController
     /**
      * @Route("/pictures", name="list-pictures", methods={"GET"})
      */
-    public function index(
-        Request $request,
-        TokenStorageInterface $tokenStorage,
-        UserRepository $userRepository,
-        JWTTokenManagerInterface $tokenManager
-    )
+    public function index(Request $request)
     {
-        $token = $tokenStorage->getToken();
-        $tokenInfo = $tokenManager->decode($token);
-
-        $user = $userRepository->findOneBy(['email' => $tokenInfo['username']]);
+        $user = $this->getUser();
         $photoshoot = $user->getPhotoShoot();
 
         $dir = realpath($this->uploadDir . '/' . $photoshoot->getId());
@@ -45,22 +34,21 @@ class PictureController extends AbstractController
 
         $page = $request->query->get('page', 1);
         $totalItems = $finder->count();
-        $perPage = 18;
         $results = iterator_to_array($finder);
 
         $pagination = [
             'results' => [],
             'pagination' => [
                 'total' => $totalItems,
-                'maxPage' => floor($totalItems / $perPage),
+                'maxPage' => floor($totalItems / self::PER_PAGE),
                 'currentPage' => $page,
-                'perPage' => $perPage,
+                'perPage' => self::PER_PAGE,
             ],
         ];
 
-        $offset = $page * $perPage;
+        $offset = $page * self::PER_PAGE;
 
-        foreach (array_slice($results, $offset, $perPage) as $file) {
+        foreach (array_slice($results, $offset, self::PER_PAGE) as $file) {
             $pagination['results'][] = $file->getFilename();
         }
         
@@ -68,19 +56,47 @@ class PictureController extends AbstractController
     }
 
     /**
+     * @Route("/pictures/range", name="pictures-range", methods={"GET"})
+     */
+    public function range(Request $request)
+    {
+        $name = $request->query->get('file', null);
+        $index = $request->query->get('index', null);
+        $user = $this->getUser();
+        $photoshoot = $user->getPhotoShoot();
+
+        $dir = realpath($this->uploadDir . '/' . $photoshoot->getId());
+        $finder = new Finder();
+        $finder->files()->in($dir);
+
+        $totalItems = $finder->count();
+        $results = array_map(fn (SplFileInfo $file) => $file->getFilename(), array_values(iterator_to_array($finder)));
+
+        if (null !== $name) {
+            $index = array_search($name, $results);
+        }
+        
+        $page = floor($index / self::PER_PAGE);
+        $offset = $page * self::PER_PAGE;
+
+        $range = [
+            'results' => [],
+            'total' => $totalItems,
+        ];
+
+        foreach (array_slice($results, $offset, self::PER_PAGE) as $key => $file) {
+            $range['results'][$offset + $key] = $file;
+        }
+
+        return $this->json($range);
+    }
+
+    /**
      * @Route("/pictures/{name}", name="get-picture", methods={"GET"})
      */
-    public function getPicture(
-        TokenStorageInterface $tokenStorage,
-        UserRepository $userRepository,
-        JWTTokenManagerInterface $tokenManager,
-        string $name
-    )
+    public function getPicture(string $name)
     {
-        $token = $tokenStorage->getToken();
-        $tokenInfo = $tokenManager->decode($token);
-
-        $user = $userRepository->findOneBy(['email' => $tokenInfo['username']]);
+        $user = $this->getUser();
         $photoshoot = $user->getPhotoShoot();
 
         $dir = realpath($this->uploadDir . '/' . $photoshoot->getId());

@@ -7,3 +7,8 @@ export type PaginationInterface<T> = {
     total: number;
   };
 }
+
+export interface PictureRange {
+  results: Record<number, string>;
+  total: number;
+}

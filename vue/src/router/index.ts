@@ -3,7 +3,7 @@ import {
 } from 'vue-router';
 import LoggedLayout from '@/layouts/Logged.vue';
 import UnloggedLayout from '@/layouts/Unlogged.vue';
-import Home from '@/views/Home.vue';
+import PicturesIndex from '@/views/PicturesIndex.vue';
 
 import { isAuthenticated, revokeToken, isAdmin } from '@/composition/auth';
 
@@ -29,9 +29,9 @@ const routes: RouteRecordRaw[] = [
     },
     children: [
       {
-        path: 'home',
+        path: '/',
         name: 'home',
-        component: Home,
+        component: PicturesIndex,
         beforeEnter(to, from, next) {
           return adminRequired(true, 'accounts', next);
         },
@@ -58,6 +58,14 @@ const routes: RouteRecordRaw[] = [
         component: () => import(/* webpackChunkName: 'account-detail' */ '@/views/AccountDetail.vue'),
         beforeEnter(to, from, next) {
           return adminRequired(false, 'home', next);
+        },
+      },
+      {
+        path: '/:pictureName',
+        name: 'picture-detail',
+        component: () => import(/* webpackChunkName: 'picture-detail' */ '@/views/PictureDetail.vue'),
+        beforeEnter(to, from, next) {
+          return adminRequired(true, 'accounts', next);
         },
       },
       { path: '/:catchAll(.*)', redirect: { name: 'home' } },

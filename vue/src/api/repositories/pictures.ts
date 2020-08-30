@@ -3,7 +3,7 @@ import { ROUTES } from '@/constants';
 import { routeMap } from '@/api';
 import { api } from '@/api/client';
 import usePaginate from '@/composition/paginate';
-import { PaginationInterface } from '@/types/api';
+import { PaginationInterface, PictureRange } from '@/types/api';
 
 const apiUrl = process.env.VUE_APP_API_HOST;
 
@@ -24,6 +24,17 @@ export default function usePictures(currentPage = 1, onUpdate: (page: number) =>
     return pagination.goToPage(currentPage);
   }
 
+  function getRange(query: string | number): Promise<PictureRange> {
+    const params = {
+      [typeof query === 'string' ? 'file' : 'index']: query,
+    };
+
+    return api.get<PictureRange>(routeMap.get(ROUTES.PICTURE_RANGE), {
+      params,
+    })
+      .then(({ data }) => data);
+  }
+
   function getStaticRoute(filename: string): string {
     const endpoint = routeMap.get(ROUTES.PICTURE, { file: filename });
 
@@ -32,6 +43,7 @@ export default function usePictures(currentPage = 1, onUpdate: (page: number) =>
 
   return {
     listPictures,
+    getRange,
     getStaticRoute,
     pagination,
   };
