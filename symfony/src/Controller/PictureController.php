@@ -10,6 +10,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
@@ -26,6 +27,7 @@ class PictureController extends AbstractController
      * @Route("/pictures", name="list-pictures", methods={"GET"})
      */
     public function index(
+        Request $request,
         TokenStorageInterface $tokenStorage,
         UserRepository $userRepository,
         JWTTokenManagerInterface $tokenManager
@@ -40,14 +42,29 @@ class PictureController extends AbstractController
         $dir = realpath($this->uploadDir . '/' . $photoshoot->getId());
         $finder = new Finder();
         $finder->files()->in($dir);
-        
-        $files = [];
 
-        foreach ($finder as $file) {
-            $files[] = $file->getFilename();
+        $page = $request->query->get('page', 1);
+        $totalItems = $finder->count();
+        $perPage = 18;
+        $results = iterator_to_array($finder);
+
+        $pagination = [
+            'results' => [],
+            'pagination' => [
+                'total' => $totalItems,
+                'maxPage' => floor($totalItems / $perPage),
+                'currentPage' => $page,
+                'perPage' => $perPage,
+            ],
+        ];
+
+        $offset = $page * $perPage;
+
+        foreach (array_slice($results, $offset, $perPage) as $file) {
+            $pagination['results'][] = $file->getFilename();
         }
         
-        return $this->json($files);
+        return $this->json($pagination);
     }
 
     /**

@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 import {
-  ref, watch, computed, Ref, isRef, UnwrapRef,
+  ref, watch, computed, Ref, isRef,
 } from 'vue';
 import { AxiosInstance } from 'axios';
 
@@ -16,7 +15,7 @@ type PaginateOptions<T = any, Payload = T[]> = {
   resultsPerPage?: Ref<number> | number;
   range?: number;
   includeLimits?: boolean;
-  onUpdate?: (page?: number) => void;
+  onUpdate?: (page: number) => void;
   params?: Ref<Record<string, number | boolean | string>>;
 }
 
@@ -91,8 +90,12 @@ function usePaginate<T = any, Payload = T[]>({
   });
 
   const data = ref<T[]>([]) as Ref<T[]>;
+  const clear = () => {
+    data.value.splice(0, data.value.length);
+  };
 
   function call(): Promise<Payload> {
+    clear();
     loading.value = true;
     return instance.get<Payload>(url, {
       // Query parameters are merged with the default ones provided in the URL option
@@ -123,7 +126,7 @@ function usePaginate<T = any, Payload = T[]>({
   }
 
   function goToPage(pageNumber: number) {
-    currentPage.value = Math.min(Math.max(1, pageNumber), lastPage.value);
+    currentPage.value = Math.max(1, pageNumber);
     return call();
   }
 

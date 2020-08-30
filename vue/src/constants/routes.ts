@@ -1,4 +1,4 @@
-export const ROUTES: Record<string, string> = {
+export const ROUTES = {
   PHOTO_PACKAGES: '/photo-package',
   PHOTOSHOOTS: '/photoshoot',
   PHOTOSHOOT: '/photoshoot/{:photoshoot}',
