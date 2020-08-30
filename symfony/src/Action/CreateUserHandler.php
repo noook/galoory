@@ -48,6 +48,9 @@ class CreateUserHandler implements MessageHandlerInterface
         
         $hashedPassword = $this->userPasswordEncoder->encodePassword($user, $command->getPassword());
         $user->setPassword($hashedPassword);
+        if ($command->isAdmin() === true) {
+            $user->setRoles(array_merge($user->getRoles(), [USER::ROLE_ADMIN]));
+        }
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();

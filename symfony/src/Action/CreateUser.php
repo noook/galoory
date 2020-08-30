@@ -15,6 +15,8 @@ class CreateUser
 
     private string $lastname;
 
+    private bool $admin;
+
     /**
      * @Assert\Length(min = 8)
      */
@@ -24,13 +26,15 @@ class CreateUser
         string $email,
         string $firstname,
         string $lastname,
-        string $password
+        string $password,
+        bool $admin = false
     )
     {
         $this->email = $email;
         $this->firstname = $firstname;
         $this->lastname = $lastname;
         $this->password = $password;
+        $this->admin = $admin;
     }
 
     public function getEmail(): string
@@ -51,5 +55,10 @@ class CreateUser
     public function getPassword(): string
     {
         return $this->password;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->admin;
     }
 }
