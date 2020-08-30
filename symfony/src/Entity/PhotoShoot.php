@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
@@ -47,9 +49,15 @@ class PhotoShoot
      */
     private $package;
 
+    /**
+     * @ORM\OneToMany(targetEntity=SelectedPicture::class, mappedBy="photoshoot", orphanRemoval=true)
+     */
+    private $selectedPictures;
+
     public function __construct()
     {
         $this->id = Uuid::uuid4();
+        $this->selectedPictures = new ArrayCollection();
     }
 
     public function getId(): UuidInterface
@@ -101,6 +109,37 @@ class PhotoShoot
     public function setPackage(?PhotoPackage $package): self
     {
         $this->package = $package;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|SelectedPicture[]
+     */
+    public function getSelectedPictures(): Collection
+    {
+        return $this->selectedPictures;
+    }
+
+    public function addSelectedPicture(SelectedPicture $selectedPicture): self
+    {
+        if (!$this->selectedPictures->contains($selectedPicture)) {
+            $this->selectedPictures[] = $selectedPicture;
+            $selectedPicture->setPhotoshoot($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSelectedPicture(SelectedPicture $selectedPicture): self
+    {
+        if ($this->selectedPictures->contains($selectedPicture)) {
+            $this->selectedPictures->removeElement($selectedPicture);
+            // set the owning side to null (unless already changed)
+            if ($selectedPicture->getPhotoshoot() === $this) {
+                $selectedPicture->setPhotoshoot(null);
+            }
+        }
 
         return $this;
     }
