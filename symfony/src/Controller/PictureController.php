@@ -46,7 +46,7 @@ class PictureController extends AbstractController
             ],
         ];
 
-        $offset = $page * self::PER_PAGE;
+        $offset = ($page - 1) * self::PER_PAGE;
 
         foreach (array_slice($results, $offset, self::PER_PAGE) as $file) {
             $pagination['results'][] = $file->getFilename();
