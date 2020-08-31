@@ -15,6 +15,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 class PhotoShoot
 {
     const STATUS_PENDING = 'pending';
+    const STATUS_DONE = 'done';
 
     /**
      * @ORM\Id()

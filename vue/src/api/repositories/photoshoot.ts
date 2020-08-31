@@ -68,11 +68,27 @@ export default function usePhotoshootRepository() {
       .then(() => shoot);
   }
 
+  function exportOutput(shoot: Photoshoot) {
+    return api.get<string>(routeMap.get(ROUTES.PHOTOSHOOT_EXPORT, { photoshoot: shoot.id }), {
+      responseType: 'text',
+    })
+      .then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const { customer } = shoot;
+        const filename = `${customer.firstname}-${customer.lastname}-${shoot.package.name}.txt`;
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', filename);
+        link.click();
+      });
+  }
+
   return {
     photoshoots,
 
     get,
     list,
+    exportOutput,
 
     create,
     remove,

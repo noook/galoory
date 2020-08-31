@@ -8,15 +8,17 @@ use App\Action\DeletePhotoshoot;
 use App\Action\EditPhotoshoot;
 use App\Action\SaveFile;
 use App\Entity\PhotoShoot;
+use App\Entity\SelectedPicture;
 use App\Form\UserRegisterType;
 use App\Repository\PhotoPackageRepository;
 use App\Repository\PhotoShootRepository;
 use App\Repository\UserRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\HandledStamp;
 use Symfony\Component\Routing\Annotation\Route;
@@ -230,5 +232,56 @@ class PhotoShootController extends AbstractController
         }
 
         return $this->json([], JsonResponse::HTTP_NO_CONTENT, []);
+    }
+
+    /**
+     * @Route("/photoshoot/validate", name="photoshoot-validate", methods={"POST"})
+     */
+    public function updateStatus(EntityManagerInterface $em): JsonResponse
+    {
+        /** @var \App\Entity\User */
+        $user = $this->getUser();
+        $photoshoot = $user->getPhotoshoot();
+
+        $photoshoot->setStatus(PhotoShoot::STATUS_DONE);
+        $em->flush();
+
+        return $this->json(
+            $photoshoot,
+            JsonResponse::HTTP_OK,
+            [],
+            ['groups' => 'photoshoot'],
+        );
+    }
+
+    /**
+     * @Route("/photoshoot/{photoshoot}/export", name="photoshoot-export", methods={"GET"})
+     * @ParamConverter("photoshoot", class="App\Entity\PhotoShoot")
+     */
+    public function exportPhotoshoot(PhotoShoot $photoshoot)
+    {
+        $customer = $photoshoot->getCustomer();
+
+        $content = array_reduce(
+            $photoshoot->getSelectedPictures()->toArray(),
+            fn (string $acc, SelectedPicture $file) => sprintf("%s%s\n", $acc, $file->getFilename()),
+            sprintf(
+                "%s %s - Formule %s\n\n",
+                $customer->getFirstname(),
+                $customer->getLastname(),
+                $photoshoot->getPackage()->getName(),
+            ),
+        );
+
+        $response = new Response(
+            $content,
+            Response::HTTP_OK,
+            [
+                'Filename' => 'export.txt',
+                'Content-Type' => 'text/txt',
+            ]
+        );
+
+        return $response;
     }
 }

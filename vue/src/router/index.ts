@@ -29,9 +29,17 @@ const routes: RouteRecordRaw[] = [
     },
     children: [
       {
-        path: '/',
+        path: '/pictures',
         name: 'home',
         component: PicturesIndex,
+        beforeEnter(to, from, next) {
+          return adminRequired(true, 'accounts', next);
+        },
+      },
+      {
+        path: '/selection',
+        name: 'selection',
+        component: () => import(/* webpackChunkName: 'selection' */ '@/views/Selection.vue'),
         beforeEnter(to, from, next) {
           return adminRequired(true, 'accounts', next);
         },

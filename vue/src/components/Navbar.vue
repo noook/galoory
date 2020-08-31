@@ -27,7 +27,7 @@
                 </router-link>
               </li>
               <li>
-                <router-link :to="{ name: 'login' }">
+                <router-link :to="{ name: 'selection' }">
                   Sélection
                 </router-link>
               </li>
@@ -40,12 +40,20 @@
       </transition>
     </div>
     <div class="desktop">
-      <router-link :to="{ name: 'home' }" class="flex h-full">
-        <img
-          class="h-full"
-          src="@/assets/img/louisethb-logo.svg"
-          alt="Louisethb logo">
-      </router-link>
+      <div class="flex items-center h-full links body">
+        <router-link :to="{ name: 'home' }" class="flex h-full">
+          <img
+            class="h-full"
+            src="@/assets/img/louisethb-logo.svg"
+            alt="Louisethb logo">
+        </router-link>
+        <router-link :to="{ name: 'home' }">
+          Galerie
+        </router-link>
+        <router-link :to="{ name: 'selection' }">
+          Sélection
+        </router-link>
+      </div>
       <div>
         <ul v-if="isAuthenticated" class="flex items-center">
           <li>
@@ -77,7 +85,9 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue';
-import { revokeToken, isAuthenticated, tokenInfo } from '@/composition/auth';
+import {
+  revokeToken, isAuthenticated, tokenInfo, isAdmin,
+} from '@/composition/auth';
 import { useRouter } from 'vue-router';
 
 export default defineComponent({
@@ -101,6 +111,7 @@ export default defineComponent({
       logout,
 
       isAuthenticated,
+      isAdmin,
       userInfos,
     };
   },
@@ -162,11 +173,11 @@ export default defineComponent({
   .desktop {
     @apply hidden md:flex justify-between items-center;
     @apply px-16 py-1;
-  }
-}
 
-button[role=close] {
-  font-family: Garamond, 'Apple Garamond';
+    .links a {
+      @apply mr-8 text-white;
+    }
+  }
 }
 
 ul li {

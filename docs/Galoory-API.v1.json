@@ -683,7 +683,8 @@
         "type": "string",
         "title": "PhotoshootStatus",
         "enum": [
-          "pending"
+          "pending",
+          "done"
         ]
       }
     },

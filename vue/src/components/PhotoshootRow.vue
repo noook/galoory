@@ -13,6 +13,9 @@
             Voir
           </button>
         </router-link>
+        <button v-if="photoshoot.status === 'done'" @click="exportOutput(photoshoot)">
+          Exporter
+        </button>
         <button @click="deletePhotoshoot">
           Archiver
         </button>
@@ -56,7 +59,7 @@ export default defineComponent({
       },
     }));
 
-    const { remove: removeShoot } = usePhotoshootRepository();
+    const { remove: removeShoot, exportOutput } = usePhotoshootRepository();
     function deletePhotoshoot() {
       return removeShoot(props.photoshoot)
         .then(() => emit('delete', props.photoshoot));
@@ -67,6 +70,7 @@ export default defineComponent({
       detailRoute,
 
       deletePhotoshoot,
+      exportOutput,
 
       toDMY,
     };

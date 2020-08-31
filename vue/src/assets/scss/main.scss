@@ -30,6 +30,10 @@ img.icon-xl {
   @apply w-8 h-8;
 }
 
+button[role=close] {
+  font-family: Garamond, 'Apple Garamond';
+}
+
 input {
   @apply h-8 px-2 text-xs;
   @apply border border-gray-border rounded;
@@ -94,7 +98,7 @@ div.warn {
 }
 
 .actions {
-  @apply flex items-center justify-center;
+  @apply flex items-center justify-end;
 
   button { 
     @apply px-4 h-8 flex items-center;

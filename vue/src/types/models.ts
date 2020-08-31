@@ -12,7 +12,7 @@ export interface PhotoPackage {
   quantity: number;
 }
 
-type PhotoshootStatus = 'pending';
+type PhotoshootStatus = 'pending' | 'done';
 
 export interface NewPhotoshoot {
   user: Pick<User, 'firstname' | 'lastname' | 'email'>;

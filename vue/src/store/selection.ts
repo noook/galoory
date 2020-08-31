@@ -2,7 +2,7 @@ import { ref, computed } from 'vue';
 import { api } from '@/api/client';
 import { routeMap } from '@/api';
 import { ROUTES } from '@/constants';
-import { NewSelectedPicture } from '@/types/models';
+import { NewSelectedPicture, PhotoshootDTO } from '@/types/models';
 import { AxiosError } from 'axios';
 
 const files = ref<string[]>([]);
@@ -56,6 +56,11 @@ function removeFromSelection(filename: string) {
     });
 }
 
+function validate() {
+  return api.post<Omit<PhotoshootDTO, 'package' | 'customer'>>(routeMap.get(ROUTES.PHOTOSHOOT_VALIDATE))
+    .then(({ data }) => data);
+}
+
 export function useSelection() {
   getSelection();
   getQuota();
@@ -71,4 +76,5 @@ export default {
 
   addToSelection,
   removeFromSelection,
+  validate,
 };
