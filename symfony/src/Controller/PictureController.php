@@ -31,6 +31,7 @@ class PictureController extends AbstractController
         $dir = realpath($this->uploadDir . '/' . $photoshoot->getId());
         $finder = new Finder();
         $finder->files()->in($dir);
+        $finder->sortByName(true);
 
         $page = $request->query->get('page', 1);
         $totalItems = $finder->count();
@@ -68,6 +69,7 @@ class PictureController extends AbstractController
         $dir = realpath($this->uploadDir . '/' . $photoshoot->getId());
         $finder = new Finder();
         $finder->files()->in($dir);
+        $finder->sortByName(true);
 
         $totalItems = $finder->count();
         $results = array_map(fn (SplFileInfo $file) => $file->getFilename(), array_values(iterator_to_array($finder)));
