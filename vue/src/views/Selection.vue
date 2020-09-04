@@ -13,7 +13,7 @@
         <button
           :disabled="selection.selectedLength !== selection.quota"
           class="btn primary"
-          @click="selection.validate">
+          @click="validateSelection">
           Valider ma sélection
         </button>
       </div>
@@ -34,22 +34,43 @@
     <p v-else class="text-center my-8">
       Aucune photo sélectionnée.
     </p>
+    <Popup v-model:visible="popupVisible">
+      <p class="mx-6">
+        Votre sélection a bien été validée.
+      </p>
+      <template #actions />
+    </Popup>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue';
+import { defineComponent, reactive, ref } from 'vue';
 import selection, { useSelection } from '@/store/selection';
 import usePictureRepository from '@/api/repositories/pictures';
 
+import Popup from '@/components/Popup.vue';
+
 export default defineComponent({
   name: 'Selection',
+  components: { Popup },
   setup() {
+    const popupVisible = ref(false);
+
     useSelection();
     const { getStaticRoute } = usePictureRepository();
 
+    function validateSelection() {
+      selection.validate()
+        .then(() => {
+          popupVisible.value = true;
+        });
+    }
+
     return {
+      popupVisible,
+
       selection: reactive(selection),
+      validateSelection,
 
       getStaticRoute,
     };

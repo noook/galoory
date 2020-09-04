@@ -47,12 +47,14 @@
             src="@/assets/img/louisethb-logo.svg"
             alt="Louisethb logo">
         </router-link>
-        <router-link :to="{ name: 'home' }">
-          Galerie
-        </router-link>
-        <router-link :to="{ name: 'selection' }">
-          Sélection
-        </router-link>
+        <template v-if="!isAdmin">
+          <router-link :to="{ name: 'home' }">
+            Galerie
+          </router-link>
+          <router-link :to="{ name: 'selection' }">
+            Sélection
+          </router-link>
+        </template>
       </div>
       <div>
         <ul v-if="isAuthenticated" class="flex items-center">

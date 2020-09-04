@@ -49,7 +49,10 @@
         </div>
         <div class="flex justify-center mt-2">
           <button :disabled="!canSubmit" type="submit" class="btn primary">
-            Connexion
+            <Spinner v-if="submitting" class="w-6 h-6 mx-4" white />
+            <span v-else>
+              Connexion
+            </span>
           </button>
         </div>
       </form>
@@ -68,6 +71,7 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const error = ref(null);
+    const submitting = ref(false);
 
     const credentials = ref({
       username: '',
@@ -81,6 +85,7 @@ export default defineComponent({
 
     function login() {
       error.value = null;
+      submitting.value = true;
 
       return axios
         .post<{ token: string }>('http://api.local.nook.sh/login', credentials.value)
@@ -90,12 +95,16 @@ export default defineComponent({
         })
         .catch(({ response }) => {
           error.value = response.data;
+        })
+        .finally(() => {
+          submitting.value = false;
         });
     }
 
     return {
       credentials,
       error,
+      submitting,
 
       canSubmit,
 

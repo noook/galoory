@@ -21,6 +21,7 @@ module.exports = {
       colors: {
         black: {
           default: '#333333',
+          overlay: 'rgba(26, 26, 26, .5)',
         },
         placeholder: {
           default: 'rgba(51, 51, 51, .75)',

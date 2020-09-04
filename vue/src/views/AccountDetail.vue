@@ -104,7 +104,10 @@
             </div>
             <div class="flex justify-center my-8">
               <button type="submit" class="btn primary">
-                {{ isNewPhotoshoot ? 'Créer le compte' : 'Sauvegarder les modifications' }}
+                <Spinner v-if="submitting" class="w-6 h-6 mx-12" white />
+                <span v-else>
+                  {{ isNewPhotoshoot ? 'Créer le compte' : 'Sauvegarder les modifications' }}
+                </span>
               </button>
             </div>
           </section>
@@ -134,6 +137,12 @@
         </ul>
       </div>
     </main>
+    <Popup v-model:visible="popupVisible">
+      <p class="mx-6">
+        {{ isNewPhotoshoot ? 'Le compte a bien été créé.' : 'Le compte a bien été sauvegardé.' }}
+      </p>
+      <template #actions />
+    </Popup>
   </div>
 </template>
 
@@ -147,6 +156,7 @@ import useFileHandler, { FileInputEvent, countFiles, FileInterface } from '@/com
 
 import Dropdown from '@/components/Dropdown.vue';
 import Datepicker from '@/components/Datepicker.vue';
+import Popup from '@/components/Popup.vue';
 import zipIcon from '@/assets/svg/zip.svg';
 import fileIcon from '@/assets/svg/file.svg';
 
@@ -155,8 +165,10 @@ export default defineComponent({
   components: {
     Dropdown,
     Datepicker,
+    Popup,
   },
   setup() {
+    const popupVisible = ref(false);
     const route = useRoute();
     const router = useRouter();
     const isNewPhotoshoot = computed<boolean>(() => route.name === 'photoshoot-new');
@@ -204,14 +216,18 @@ export default defineComponent({
       }
     }
 
-    function savePhotoshoot() {
+    const submitting = ref(false);
+
+    async function savePhotoshoot() {
       packageMissing.value = false;
+      submitting.value = true;
+
       if (isNewPhotoshoot.value) {
         if (!photoshoot.value?.package) {
           packageMissing.value = true;
           return;
         }
-        create({
+        await create({
           user: form.value,
           package: photoshoot.value.package.id,
           expiration: photoshoot.value.expiration!,
@@ -228,7 +244,7 @@ export default defineComponent({
             });
           });
       } else {
-        update(photoshoot.value!.id!, {
+        await update(photoshoot.value!.id!, {
           user: form.value,
           package: photoshoot.value!.package!.id,
           expiration: photoshoot.value!.expiration!,
@@ -241,6 +257,9 @@ export default defineComponent({
           })
           .catch(console.error);
       }
+
+      submitting.value = false;
+      popupVisible.value = true;
     }
 
     if (route.name === 'photoshoot-detail') {
@@ -258,6 +277,9 @@ export default defineComponent({
     }
 
     return {
+      popupVisible,
+      submitting,
+
       packages,
       editMode,
       isNewPhotoshoot,
