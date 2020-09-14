@@ -234,6 +234,7 @@ export default defineComponent({
         })
           .then(shoot => saveFiles(shoot, fileHandler.files.value))
           .then(shoot => {
+            photoshoot.value = shoot;
             fileHandler.clear();
             editMode.value = false;
             router.push({
