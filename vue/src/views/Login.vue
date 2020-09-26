@@ -88,7 +88,7 @@ export default defineComponent({
       submitting.value = true;
 
       return axios
-        .post<{ token: string }>('http://api.local.nook.sh/login', credentials.value)
+        .post<{ token: string }>(`${process.env.VUE_APP_API_HOST}/login`, credentials.value)
         .then(({ data }) => {
           setToken(data.token);
           router.push({ name: 'home' });
