@@ -33,7 +33,7 @@ class PictureController extends AbstractController
         $finder->files()->in($dir);
         $finder->sortByName(true);
 
-        $page = $request->query->get('page', 1);
+        $page = (int) $request->query->get('page', 1);
         $totalItems = $finder->count();
         $results = iterator_to_array($finder);
 
@@ -41,7 +41,7 @@ class PictureController extends AbstractController
             'results' => [],
             'pagination' => [
                 'total' => $totalItems,
-                'maxPage' => floor($totalItems / self::PER_PAGE),
+                'maxPage' => ceil($totalItems / self::PER_PAGE),
                 'currentPage' => $page,
                 'perPage' => self::PER_PAGE,
             ],
@@ -78,7 +78,7 @@ class PictureController extends AbstractController
             $index = array_search($name, $results);
         }
         
-        $page = floor($index / self::PER_PAGE);
+        $page = ceil($index / self::PER_PAGE);
         $offset = $page * self::PER_PAGE;
 
         $range = [
