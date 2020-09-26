@@ -4,7 +4,15 @@
       {{ customerFullname }}
     </td>
     <td>{{ photoshoot.package.name }}</td>
-    <td>{{ photoshoot.status }}</td>
+    <td>
+      <div class="flex items-center">
+        <img
+          class="mr-2"
+          :src="STATUSES_ICONS[photoshoot.status]"
+          :alt="photoshoot.status">
+        <span>{{ STATUSES_FR[photoshoot.status] }}</span>
+      </div>
+    </td>
     <td>{{ toDMY(photoshoot.expiration) }}</td>
     <td>
       <div class="actions">
@@ -29,6 +37,7 @@ import { defineComponent, computed } from 'vue';
 import usePhotoshootRepository from '@/api/repositories/photoshoot';
 import { toDMY } from '@/filters';
 import { Photoshoot } from '@/types/models';
+import { STATUSES_ICONS, STATUSES_FR } from '@/constants';
 
 interface Props {
   photoshoot: {
@@ -66,6 +75,9 @@ export default defineComponent({
     }
 
     return {
+      STATUSES_FR,
+      STATUSES_ICONS,
+
       customerFullname,
       detailRoute,
 
