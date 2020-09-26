@@ -69,7 +69,7 @@ const routes: RouteRecordRaw[] = [
         },
       },
       {
-        path: '/:pictureName',
+        path: '/pictures/:pictureName',
         name: 'picture-detail',
         component: () => import(/* webpackChunkName: 'picture-detail' */ '@/views/PictureDetail.vue'),
         beforeEnter(to, from, next) {

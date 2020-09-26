@@ -35,7 +35,7 @@ class PictureController extends AbstractController
 
         $page = (int) $request->query->get('page', 1);
         $totalItems = $finder->count();
-        $results = iterator_to_array($finder);
+        $results = array_map(fn (SplFileInfo $file) => $file->getFileName(), array_values(iterator_to_array($finder)));
 
         $pagination = [
             'results' => [],
@@ -49,8 +49,8 @@ class PictureController extends AbstractController
 
         $offset = ($page - 1) * self::PER_PAGE;
 
-        foreach (array_slice($results, $offset, self::PER_PAGE) as $file) {
-            $pagination['results'][] = $file->getFilename();
+        foreach (array_slice($results, $offset, self::PER_PAGE) as $key => $file) {
+            $pagination['results'][$offset + $key + 1] = $file;
         }
         
         return $this->json($pagination);
@@ -62,7 +62,7 @@ class PictureController extends AbstractController
     public function range(Request $request)
     {
         $name = $request->query->get('file', null);
-        $index = $request->query->get('index', null);
+        $index = (int) $request->query->get('index', null);
         $user = $this->getUser();
         $photoshoot = $user->getPhotoShoot();
 
@@ -78,7 +78,7 @@ class PictureController extends AbstractController
             $index = array_search($name, $results);
         }
         
-        $page = ceil($index / self::PER_PAGE);
+        $page = (int) floor($index / self::PER_PAGE);
         $offset = $page * self::PER_PAGE;
 
         $range = [
@@ -87,7 +87,7 @@ class PictureController extends AbstractController
         ];
 
         foreach (array_slice($results, $offset, self::PER_PAGE) as $key => $file) {
-            $range['results'][$offset + $key] = $file;
+            $range['results'][$offset + $key + 1] = $file;
         }
 
         return $this->json($range);

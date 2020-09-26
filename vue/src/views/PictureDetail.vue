@@ -134,7 +134,7 @@ export default defineComponent({
         Object
           .entries(range.results)
           .forEach(([index, file]) => {
-            cachedPictures.value[+index + 1] = file;
+            cachedPictures.value[+index] = file;
 
             if (file === filename.value) {
               currentIndex.value = +index;
