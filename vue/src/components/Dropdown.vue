@@ -75,6 +75,10 @@ export default defineComponent({
   &:not(.disabled) .dropdown-value {
     @apply cursor-pointer;
   }
+
+  &.disabled .dropdown-value {
+    @apply bg-disabled;
+  }
 }
 
 .dropdown-value {

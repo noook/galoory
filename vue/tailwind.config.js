@@ -19,6 +19,9 @@ module.exports = {
         82: '20rem',
       },
       colors: {
+        disabled: {
+          default: 'rgba(239, 239, 239, .3)',
+        },
         black: {
           default: '#333333',
           overlay: 'rgba(26, 26, 26, .5)',

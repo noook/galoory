@@ -222,6 +222,10 @@ export default defineComponent({
     @apply flex items-center py-1 pr-6 pl-2 h-full;
   }
 
+  &.disabled .display {
+    @apply bg-disabled;
+  }
+
   .picker {
     @apply absolute bg-white border border-gray-border rounded;
     @apply p-4 mt-2 mb-5 shadow-popup;

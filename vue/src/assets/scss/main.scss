@@ -53,6 +53,10 @@ input {
     @apply outline-none;
     box-shadow: 0 0 3px 1px theme('colors.indigo.default');
   }
+
+  &:disabled {
+    @apply bg-disabled;
+  }
 }
 
 .dot {

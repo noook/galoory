@@ -34,6 +34,7 @@
               <input
                 id="firstname"
                 v-model="form.firstname"
+                :disabled="!editMode"
                 required
                 type="text">
             </div>
@@ -42,6 +43,7 @@
               <input
                 id="lastname"
                 v-model="form.lastname"
+                :disabled="!editMode"
                 required
                 type="text">
             </div>
@@ -50,6 +52,7 @@
               <input
                 id="email"
                 v-model="form.email"
+                :disabled="!editMode"
                 required
                 type="email">
             </div>
