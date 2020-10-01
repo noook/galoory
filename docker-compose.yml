@@ -12,7 +12,7 @@ services:
             - ./ops/nginx/hosts/:/etc/nginx/sites-enabled
             - ./ops/nginx/conf.d/:/etc/nginx/conf.d
             - ./logs/nginx/:/var/log/nginx
-            - nfsmountSymfonyGaloory:/var/www/html/symfony
+            - ./symfony:/var/www/html/symfony
         depends_on:
             - api
         networks:
@@ -26,7 +26,7 @@ services:
         tty: true
         volumes:
             - ./vue:/usr/src/galoory
-            - galoory_node_modules:/usr/src/galoory/node_modules
+            - ./vue/node_modules:/usr/src/galoory/node_modules
         working_dir: /usr/src/galoory
         command: npm run serve
         environment:
@@ -37,7 +37,7 @@ services:
         ports:
             - 9229:9229
             - 8080:8080
-    
+
     db:
         container_name: galoory-db
         image: postgres:latest
@@ -65,23 +65,11 @@ services:
             - db
         working_dir: /var/www/html/symfony
         volumes:
-            - "nfsmountSymfonyGaloory:/var/www/html/symfony"
+            - "./symfony:/var/www/html/symfony"
         networks:
             - default
         environment:
             DATABASE_URL: pgsql://root:root@db:5432/galoory
-    
-
-
 
 volumes:
-    galoory_node_modules:
-        external: true
     postgres: ~
-    nfsmountSymfonyGaloory:
-        driver: local
-        driver_opts:
-            type: nfs
-            o: addr=host.docker.internal,rw,nolock,hard,nointr,nfsvers=3
-            device: ":/System/Volumes/Data${PWD}/symfony"
-    
