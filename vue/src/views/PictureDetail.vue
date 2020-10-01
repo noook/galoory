@@ -144,6 +144,9 @@ export default defineComponent({
             if (file === filename.value) {
               currentIndex.value = +index;
             }
+
+            const img = new Image();
+            img.src = getStaticRoute(file);
           });
       });
 
@@ -186,7 +189,7 @@ input[type=number]::-webkit-outer-spin-button {
   margin: 0;
 }
 
-img[role=image-holder] {
+div[role=image-holder] img {
   max-height: 550px;
 }
 </style>
