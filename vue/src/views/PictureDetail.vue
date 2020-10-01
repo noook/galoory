@@ -34,7 +34,10 @@
             alt="Left arrow">
         </button>
       </div>
-      <div v-if="cachedPictures[currentIndex]" class="my-8 flex flex-col items-center">
+      <div
+        v-if="cachedPictures[currentIndex]"
+        role="image-holder"
+        class="my-8 flex flex-col items-center">
         <img :src="currentRoute" :alt="cachedPictures[currentIndex]">
         <div class="my-4">
           <Checkbox :model-value="isSelected" @update:modelValue="updateSelection">
@@ -113,6 +116,8 @@ export default defineComponent({
               .entries(range.results)
               .forEach(([idx, file]) => {
                 cachedPictures.value[+idx] = file;
+                const img = new Image();
+                img.src = getStaticRoute(file);
               });
           });
       }
@@ -179,5 +184,9 @@ input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+img[role=image-holder] {
+  max-height: 550px;
 }
 </style>
