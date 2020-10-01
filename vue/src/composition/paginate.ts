@@ -148,7 +148,7 @@ function usePaginate<T = any, Payload = T[]>({
     pages,
     goToPage,
     previous,
-    total,
+    total: !totalTransformer ? undefined : total,
     data,
     resultsPerPage: limit,
   };
