@@ -32,6 +32,9 @@ class PhotoPackage extends Fixture implements FixtureGroupInterface
                 ->setName('Avantage')
                 ->setQuantity(10),
             (new EntityPhotoPackage())
+                ->setName('Prestige')
+                ->setQuantity(15),
+            (new EntityPhotoPackage())
                 ->setName('Duo')
                 ->setQuantity(15),
         ];
