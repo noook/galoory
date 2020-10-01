@@ -14,7 +14,7 @@ export default function usePictures(currentPage = 1, onUpdate: (page: number) =>
     instance: api,
     url: routeMap.get(ROUTES.PICTURES),
     totalPageTransformer: payload => payload.pagination.maxPage,
-    dataTransformer: payload => payload.results,
+    dataTransformer: payload => Object.values(payload.results),
     totalTransformer: payload => payload.pagination.total,
     currentPage,
     onUpdate,
