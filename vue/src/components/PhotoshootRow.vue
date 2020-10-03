@@ -13,7 +13,7 @@
         <span>{{ STATUSES_FR[photoshoot.status] }}</span>
       </div>
     </td>
-    <td>{{ toDMY(photoshoot.expiration) }}</td>
+    <td>{{ toDMY(photoshoot.date) }}</td>
     <td>
       <div class="actions">
         <router-link v-slot="{ navigate }" :to="detailRoute">

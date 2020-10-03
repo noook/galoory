@@ -16,24 +16,27 @@ type PhotoshootStatus = 'pending' | 'done';
 
 export interface NewPhotoshoot {
   user: Pick<User, 'firstname' | 'lastname' | 'email'>;
-  expiration: Date;
-  package: string;
+  date: Date;
+  package: PhotoPackage;
+  comment: string;
 }
 
 export interface PhotoshootDTO {
   id: string;
   customer: User;
-  expiration: string;
+  date: string;
   status: PhotoshootStatus;
   package: PhotoPackage;
+  comment: string;
 }
 
 export interface Photoshoot {
   id: string;
   customer: User;
-  expiration: Date;
+  date: Date;
   status: PhotoshootStatus;
   package: PhotoPackage;
+  comment: string;
 }
 
 export interface NewSelectedPicture {

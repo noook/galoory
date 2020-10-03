@@ -8,14 +8,14 @@ import { FileInterface } from '@/composition/file-handler';
 export default function usePhotoshootRepository() {
   const photoshoots = ref<Photoshoot[]>([]);
 
-  const dtoTransformer = ({ expiration, ...rest }: PhotoshootDTO) => ({
+  const dtoTransformer = ({ date, ...rest }: PhotoshootDTO) => ({
     ...rest,
-    expiration: new Date(expiration),
+    date: new Date(date),
   });
 
-  const payloadTransformer = ({ expiration, ...rest }: Photoshoot | NewPhotoshoot) => ({
+  const payloadTransformer = ({ date, ...rest }: Photoshoot | NewPhotoshoot) => ({
     ...rest,
-    expiration: expiration.toISOString(),
+    date: date.toISOString(),
   });
 
   function get(id: string): Promise<Photoshoot> {
