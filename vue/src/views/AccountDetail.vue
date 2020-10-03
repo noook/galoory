@@ -63,24 +63,45 @@
                 :disabled="!editMode"
                 @select="setPackage">
                 <template #value>
-                  {{ photoshoot.package ? photoshoot.package.name : '-' }}
+                  <span v-if="photoshoot.package">
+                    {{ photoshoot.package.name }} ({{ photoshoot.package.quantity }} photos)
+                  </span>
+                  <span v-else>—</span>
                 </template>
                 <template #content="{ select }">
                   <ul>
                     <li v-for="pkg in packages" :key="pkg.id" @click="select(pkg)">
                       {{ pkg.name }}
                     </li>
+                    <li @click="select({ id: 'other', quantity: 6, name: 'Autre' })">
+                      Autre
+                    </li>
                   </ul>
                 </template>
               </Dropdown>
             </div>
-            <div class="form-input">
-              <label>Expiration</label>
-              <Datepicker
-                v-model="photoshoot.expiration"
-                :disabled="!editMode"
-                :min="new Date()" />
+            <div v-if="photoshoot.package && photoshoot.package.id === 'other'" class="form-input">
+              <label>Nombre de photos</label>
+              <input
+                v-model="photoshoot.package.quantity"
+                type="number"
+                min="1"
+                step="1">
             </div>
+            <div class="form-input">
+              <label>Date</label>
+              <Datepicker
+                v-model="photoshoot.date"
+                :disabled="!editMode" />
+            </div>
+          </div>
+          <div class="form-input mt-1 mb-2">
+            <label for="comment">Commentaire</label>
+            <textarea
+              id="comment"
+              v-model="photoshoot.comment"
+              name="comment"
+              rows="5" />
           </div>
           <section id="files">
             <h3 class="text-xl text-gray-400">
@@ -183,6 +204,12 @@ export default defineComponent({
     const packageMissing = ref(false);
 
     const photoshoot = ref<Partial<Photoshoot> | null>(null);
+    if (isNewPhotoshoot.value === true) {
+      photoshoot.value = {
+        comment: '',
+      };
+    }
+
     function setPackage(pkg: PhotoPackage) {
       packageMissing.value = false;
       photoshoot.value!.package = pkg;
@@ -232,8 +259,9 @@ export default defineComponent({
         }
         await create({
           user: form.value,
-          package: photoshoot.value.package.id,
-          expiration: photoshoot.value.expiration!,
+          package: photoshoot.value.package,
+          date: photoshoot.value.date!,
+          comment: photoshoot.value.comment!,
         })
           .then(shoot => saveFiles(shoot, fileHandler.files.value))
           .then(shoot => {
@@ -250,8 +278,9 @@ export default defineComponent({
       } else {
         await update(photoshoot.value!.id!, {
           user: form.value,
-          package: photoshoot.value!.package!.id,
-          expiration: photoshoot.value!.expiration!,
+          package: photoshoot.value!.package!,
+          date: photoshoot.value!.date!,
+          comment: photoshoot.value!.comment!,
         })
           .then(shoot => saveFiles(shoot, fileHandler.files.value))
           .then(shoot => {
@@ -275,7 +304,7 @@ export default defineComponent({
         });
     } else {
       photoshoot.value = {
-        expiration: new Date(),
+        date: new Date(),
         package: undefined,
       };
     }
@@ -342,6 +371,10 @@ form {
 
   input {
     @apply text-sm;
+  }
+
+  textarea {
+    @apply border border-gray-border rounded p-2 text-sm;
   }
 }
 
