@@ -17,9 +17,11 @@ use App\Repository\PhotoPackageRepository;
 use App\Repository\PhotoShootRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query\Expr\Select;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -50,7 +52,8 @@ class PhotoShootController extends AbstractController
         PhotoPackageRepository $photoPackageRepository,
         UserRepository $userRepository,
         EntityManagerInterface $em,
-        MessageBusInterface $commandBus
+        MessageBusInterface $commandBus,
+        ParameterBagInterface $bag
     ): JsonResponse
     {
         $payload = \json_decode($request->getContent(), true);
@@ -124,14 +127,14 @@ class PhotoShootController extends AbstractController
 
             try {
                 $body = "Bonjour %s,<br><br>" .
-                        "Les photos de ton shoot seront disponibles <a href=\"http://local.nook.sh\">à cette adresse</a><br>" .
+                        "Les photos de ton shoot seront disponibles <a href=\"" . $bag->get('app_url') . "\">à cette adresse</a><br>" .
                         "Pour t'y connecter, utilise ces identifiants:<br><br>" .
                         "Email: %s<br>" .
                         "Mot de passe: %s<br><br>" .
                         "Lorsque tu auras fini ta sélection, tu pourras la valider depuis ton espace de sélection, j'en serai alors notifiée.<br><br>" .
                         "Louise";
                 $altBody = "Bonjour %s,\n\n" .
-                            "Les photos de ton shoot seront disponibles à cette adresse: http://local.nook.sh\n" .
+                            "Les photos de ton shoot seront disponibles à cette adresse: " . $bag->get('app_url') . "\n" .
                             "Pour t'y connecter, utilise ces identifiants:\n\n" .
                             "Email: %s\n>" .
                             "Mot de passe: %s\n>\n>" .
@@ -318,7 +321,11 @@ class PhotoShootController extends AbstractController
     /**
      * @Route("/photoshoot/validate", name="photoshoot-validate", methods={"POST"})
      */
-    public function updateStatus(EntityManagerInterface $em): JsonResponse
+    public function updateStatus(
+        EntityManagerInterface $em,
+        MessageBusInterface $commandBus,
+        ParameterBagInterface $bag
+    ): JsonResponse
     {
         /** @var \App\Entity\User */
         $user = $this->getUser();
@@ -326,6 +333,32 @@ class PhotoShootController extends AbstractController
 
         $photoshoot->setStatus(PhotoShoot::STATUS_DONE);
         $em->flush();
+
+        function replaceBody($mailBody, string $customer, array $selectedFiles, string $newline): string {
+            $files = implode($newline, array_map(fn ($line) => sprintf('- %s', $line), $selectedFiles));
+
+            return sprintf($mailBody, $customer, $newline, $newline, $newline, $files);
+        }
+
+        try {
+            $body = "%s vient de finir de sa sélection de photos !%s%s" .
+                    "Photos choisies:%s" .
+                    "%s";
+
+            $pictures = $photoshoot->getSelectedPictures()->map(fn (SelectedPicture $pic) => $pic->getFilename())->toArray();
+            $commandBus->dispatch(
+                new SendMail(
+                    sprintf('%s vient de finir de sa sélection de photo !', $user->getFirstname()),
+                    replaceBody($body, $user->getFirstname(), $pictures, '<br>'),
+                    replaceBody($body, $user->getFirstname(), $pictures, "\n"),
+                    $bag->get('notified_admin'),
+                )
+            );
+        } catch (\Exception $e) {
+            return $this->json([
+                'message' => 'An error occurred while sending the selection confirmation mail.',
+            ], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
 
         return $this->json(
             $photoshoot,

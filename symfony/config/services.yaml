@@ -6,6 +6,8 @@
 parameters:
     uploads_dir: "%kernel.project_dir%/uploads"
     gmail_credentials: "%kernel.project_dir%/config/google/gmail.json"
+    notified_admin: "%env(NOTIFIED_ADMIN)%"
+    app_url: "%env(APP_URL)%"
 
 services:
     # default configuration for services in *this* file
