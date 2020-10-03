@@ -3,7 +3,7 @@
     <div class="with-bg md:w-3/5">
       <img
         class="md:w-82"
-        src="@/assets/img/louisethb-logo.svg"
+        src="@/assets/img/louisethb-logo.png"
         alt="louisethb logo">
       <form class="md:hidden" @submit.prevent="login">
         <input

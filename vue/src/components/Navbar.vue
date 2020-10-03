@@ -3,7 +3,7 @@
     <div class="mobile">
       <img
         class="h-12"
-        src="@/assets/img/louisethb-logo.svg"
+        src="@/assets/img/louisethb-logo.png"
         alt="Louisethb logo">
       <button @click="menuOpen = true">
         <img class="w-8" src="@/assets/svg/hamburger.svg" alt="Hamburger menu">
@@ -13,7 +13,7 @@
           <div class="head">
             <img
               class="h-12"
-              src="@/assets/img/louisethb-logo.svg"
+              src="@/assets/img/louisethb-logo.png"
               alt="Louisethb logo">
             <button role="close" class="text-5xl text-white font-bold" @click="menuOpen = false">
               &times;
@@ -44,7 +44,7 @@
         <router-link :to="{ name: 'home' }" class="flex h-full">
           <img
             class="h-full"
-            src="@/assets/img/louisethb-logo.svg"
+            src="@/assets/img/louisethb-logo.png"
             alt="Louisethb logo">
         </router-link>
         <template v-if="!isAdmin">
