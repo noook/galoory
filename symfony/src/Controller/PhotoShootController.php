@@ -8,6 +8,7 @@ use App\Action\DeletePhotoshoot;
 use App\Action\EditPhotoshoot;
 use App\Action\SaveFile;
 use App\Action\SendMail;
+use App\Entity\PhotoPackage;
 use App\Entity\PhotoShoot;
 use App\Entity\SelectedPicture;
 use App\Entity\User;
@@ -16,6 +17,7 @@ use App\Repository\PhotoPackageRepository;
 use App\Repository\PhotoShootRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -47,12 +49,13 @@ class PhotoShootController extends AbstractController
         Request $request,
         PhotoPackageRepository $photoPackageRepository,
         UserRepository $userRepository,
+        EntityManagerInterface $em,
         MessageBusInterface $commandBus
     ): JsonResponse
     {
         $payload = \json_decode($request->getContent(), true);
 
-        $requiredFields = ['user', 'package', 'expiration'];
+        $requiredFields = ['user', 'package', 'date', 'comment'];
         
         foreach ($requiredFields as $field) {
             if (!isset($payload[$field])) {
@@ -62,11 +65,20 @@ class PhotoShootController extends AbstractController
             }
         }
 
-        $package = $photoPackageRepository->find($payload['package']);
+        if (Uuid::isValid($payload['package']['id'])) {
+            $package = $photoPackageRepository->find($payload['package']['id']);
+        } else if ($payload['package']['id'] === 'other') {
+            $package = (new PhotoPackage)
+                ->setQuantity($payload['package']['quantity'])
+                ->setName($payload['package']['name']);
+            
+            $em->persist($package);
+            $em->flush();
+        }
 
         if (null === $package) {
             return $this->json([
-                'message' => sprintf('Invalid value "%s" for field "package"', $payload['package']),
+                'message' => sprintf('Invalid value "%s" for field "package"', $payload['package']['id']),
             ], JsonResponse::HTTP_BAD_REQUEST);
         }
 
@@ -141,13 +153,14 @@ class PhotoShootController extends AbstractController
             }
         }
 
-        $expiration = new \DateTime($payload['expiration']);
+        $date = new \DateTime($payload['date']);
 
         $envelope = $commandBus->dispatch(
             new CreatePhotoshoot(
                 $user,
                 $package,
-                $expiration
+                $date,
+                $payload['comment'],
             )
         );
 
@@ -183,12 +196,13 @@ class PhotoShootController extends AbstractController
         Request $request,
         PhotoShoot $photoshoot,
         PhotoPackageRepository $photoPackageRepository,
-        MessageBusInterface $bus
+        MessageBusInterface $bus,
+        EntityManagerInterface $em
     ): JsonResponse
     {
         $payload = \json_decode($request->getContent(), true);
 
-        $requiredFields = ['user', 'package', 'expiration'];
+        $requiredFields = ['user', 'package', 'date', 'comment'];
         
         foreach ($requiredFields as $field) {
             if (!isset($payload[$field])) {
@@ -198,7 +212,16 @@ class PhotoShootController extends AbstractController
             }
         }
 
-        $package = $photoPackageRepository->find($payload['package']);
+        if (Uuid::isValid($payload['package']['id'])) {
+            $package = $photoPackageRepository->find($payload['package']['id']);
+        } else if ($payload['package']['id'] === 'other') {
+            $package = (new PhotoPackage)
+                ->setQuantity($payload['package']['quantity'])
+                ->setName($payload['package']['name']);
+            
+            $em->persist($package);
+            $em->flush();
+        }
 
         if (null === $package) {
             return $this->json([
@@ -206,7 +229,7 @@ class PhotoShootController extends AbstractController
             ], JsonResponse::HTTP_BAD_REQUEST);
         }
 
-        $expiration = new \DateTime($payload['expiration']);
+        $date = new \DateTime($payload['date']);
 
         try {
             $envelope = $bus->dispatch(
@@ -214,7 +237,8 @@ class PhotoShootController extends AbstractController
                     $photoshoot,
                     $package,
                     $payload['user'],
-                    $expiration
+                    $date,
+                    $payload['comment'],
                 )
             );
             $photoshoot = $envelope->last(HandledStamp::class)->getResult();

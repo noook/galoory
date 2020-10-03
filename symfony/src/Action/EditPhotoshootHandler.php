@@ -42,7 +42,7 @@ class EditPhotoshootHandler implements MessageHandlerInterface
             ->setLastname($updatedUser['lastname']);
 
         $photoshoot
-            ->setExpiration($command->getExpiration())
+            ->setDate($command->getDate())
             ->setPackage($command->getPhotoPackage());
 
         $this->em->flush();

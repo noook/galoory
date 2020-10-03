@@ -9,17 +9,20 @@ class CreatePhotoshoot
 {
     private User $user;
     private PhotoPackage $package;
-    private \DateTime $expiration;
-
+    private \DateTime $date;
+    private string $comment;
+    
     public function __construct(
         User $user,
         PhotoPackage $package,
-        \DateTime $expiration
+        \DateTime $date,
+        string $comment
     )
     {
         $this->user = $user;
         $this->package = $package;
-        $this->expiration = $expiration;
+        $this->date = $date;
+        $this->comment = $comment;
     }
 
     public function getUser(): User
@@ -32,8 +35,13 @@ class CreatePhotoshoot
         return $this->package;
     }
 
-    public function getExpiration(): \DateTime
+    public function getDate(): \DateTime
     {
-        return $this->expiration;
+        return $this->date;
+    }
+
+    public function getComment(): string
+    {
+        return $this->comment;
     }
 }

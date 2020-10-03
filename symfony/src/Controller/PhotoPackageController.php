@@ -15,7 +15,7 @@ class PhotoPackageController extends AbstractController
     public function listPhotoPackages(PhotoPackageRepository $photoPackageRepository): JsonResponse
     {
         return $this->json(
-            $photoPackageRepository->findAll(),
+            $photoPackageRepository->findAllNotCustom(),
             JsonResponse::HTTP_OK,
             [],
             ['groups' => 'photo-package'],

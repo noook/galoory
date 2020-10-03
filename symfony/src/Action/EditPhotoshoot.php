@@ -10,19 +10,22 @@ class EditPhotoshoot
     private PhotoShoot $photoshoot;
     private PhotoPackage $package;
     private array $user;
-    private \DateTime $expiration;
+    private \DateTime $date;
+    private string $comment;
 
     public function __construct(
         PhotoShoot $photoshoot,
         PhotoPackage $package,
         array $user,
-        \DateTime $expiration
+        \DateTime $date,
+        string $comment
     )
     {
         $this->photoshoot = $photoshoot;
         $this->package = $package;
         $this->user = $user;
-        $this->expiration = $expiration;
+        $this->date = $date;
+        $this->comment = $comment;
     }
 
     public function getPhotoshoot(): PhotoShoot
@@ -40,8 +43,13 @@ class EditPhotoshoot
         return $this->user;
     }
 
-    public function getExpiration(): \DateTime
+    public function getDate(): \DateTime
     {
-        return $this->expiration;
+        return $this->date;
+    }
+
+    public function getComment(): string
+    {
+        return $this->comment;
     }
 }

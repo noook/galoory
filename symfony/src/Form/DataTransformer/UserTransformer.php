@@ -62,7 +62,6 @@ class UserTransformer implements DataTransformerInterface
 
     public function reverseTransform($value): User
     {
-        dd('yes', $value);
         return $this->userRepository->find($value);
     }
 }

@@ -35,7 +35,7 @@ class PhotoShoot
      * @ORM\Column(type="datetime", nullable=true)
      * @Groups({"photoshoot"})
      */
-    private \DateTime $expiration;
+    private \DateTime $date;
 
     /**
      * @ORM\Column(type="string", length=30)
@@ -54,6 +54,12 @@ class PhotoShoot
      * @ORM\OneToMany(targetEntity=SelectedPicture::class, mappedBy="photoshoot", orphanRemoval=true)
      */
     private $selectedPictures;
+
+    /**
+     * @ORM\Column(type="text")
+     * @Groups({"photoshoot"})
+     */
+    private $comment;
 
     public function __construct()
     {
@@ -78,14 +84,14 @@ class PhotoShoot
         return $this;
     }
 
-    public function getExpiration(): ?\DateTimeInterface
+    public function getDate(): ?\DateTimeInterface
     {
-        return $this->expiration;
+        return $this->date;
     }
 
-    public function setExpiration(?\DateTimeInterface $expiration): self
+    public function setDate(?\DateTimeInterface $date): self
     {
-        $this->expiration = $expiration;
+        $this->date = $date;
 
         return $this;
     }
@@ -141,6 +147,18 @@ class PhotoShoot
                 $selectedPicture->setPhotoshoot(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getComment(): ?string
+    {
+        return $this->comment;
+    }
+
+    public function setComment(string $comment): self
+    {
+        $this->comment = $comment;
 
         return $this;
     }

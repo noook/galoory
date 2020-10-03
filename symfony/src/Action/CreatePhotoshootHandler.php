@@ -28,7 +28,8 @@ class CreatePhotoshootHandler implements MessageHandlerInterface
         $shoot
             ->setCustomer($command->getUser())
             ->setPackage($command->getPhotoPackage())
-            ->setExpiration($command->getExpiration())
+            ->setDate($command->getDate())
+            ->setComment($command->getComment())
             ->setStatus(PhotoShoot::STATUS_PENDING);
 
         mkdir($this->uploadsDirectory . '/' . $shoot->getId());

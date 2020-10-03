@@ -19,32 +19,13 @@ class PhotoPackageRepository extends ServiceEntityRepository
         parent::__construct($registry, PhotoPackage::class);
     }
 
-    // /**
-    //  * @return PhotoPackage[] Returns an array of PhotoPackage objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function findAllNotCustom(): array
     {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('p.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+        $qb = $this->createQueryBuilder('pkg');
+        $qb->where('pkg.name != :name')
+            ->setParameter('name', 'Autre');
 
-    /*
-    public function findOneBySomeField($value): ?PhotoPackage
-    {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        return $qb->getQuery()
+            ->getResult();
     }
-    */
 }
