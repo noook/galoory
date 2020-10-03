@@ -5,3 +5,9 @@ export function toDMY(date: Date): string {
     date.getFullYear(),
   ].join('/');
 }
+
+export function toReadableDate(date: Date): string {
+  const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+
+  return new Intl.DateTimeFormat('fr-FR', options).format(date);
+}

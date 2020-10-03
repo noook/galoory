@@ -1,16 +1,16 @@
 <template>
   <div class="home">
-    <div class="md:px-16">
+    <div v-if="photoshoot" class="md:px-16">
       <h1 class="mb-2">
-        Gladys - 28 Juin 2020
+        {{ photoshoot.customer.firstname }} - {{ toReadableDate(photoshoot.date) }}
       </h1>
-      <h2>Formule découverte - 6 photos</h2>
-      <p>
-        Tu trouveras ci-dessous l'ensemble des photos du shoot, pour l'instant non-retouchées.
-        Je te laisse sélectionner tes favorites et me communiquer leur nom, que tu trouveras
-        au dessus de chaque photo quand tu les affiches en grand (par exemple, la
-        première s'appelle DSC00045). En espérant qu'elles te plaisent !
-      </p>
+      <h2>
+        Formule
+        {{ photoshoot.package.name === 'Autre' ? 'personnalisée': photoshoot.package.name }}
+        -
+        {{ photoshoot.package.quantity }} photos
+      </h2>
+      <p>{{ photoshoot.comment }}</p>
     </div>
     <div v-if="files.loading" class="flex justify-center my-16">
       <Spinner class="w-16 h-16" />
@@ -62,9 +62,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue';
-import usePicturesRepository from '@/api/repositories/pictures';
+import { defineComponent, reactive, ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import { toReadableDate } from '@/filters';
+import usePicturesRepository from '@/api/repositories/pictures';
+import usePhotoshootRepository from '@/api/repositories/photoshoot';
+import { Photoshoot } from '@/types/models';
 
 export default defineComponent({
   name: 'PicturesIndex',
@@ -88,11 +91,21 @@ export default defineComponent({
     } = usePicturesRepository(parsedPage, onPageUpdate);
 
     listPictures();
+    const { getUserShoot } = usePhotoshootRepository();
+    const photoshoot = ref<Photoshoot>();
+
+    getUserShoot()
+      .then(shoot => {
+        photoshoot.value = shoot;
+      });
 
     return {
       files: reactive(pagination),
+      photoshoot,
 
       getStaticRoute,
+
+      toReadableDate,
     };
   },
 });

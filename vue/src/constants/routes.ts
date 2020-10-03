@@ -3,6 +3,7 @@ export const ROUTES = {
   PHOTOSHOOTS: '/photoshoot',
   PHOTOSHOOT_VALIDATE: '/photoshoot/validate',
   PHOTOSHOOT: '/photoshoot/{:photoshoot}',
+  PHOTOSHOOT_ME: '/photoshoot/me',
   PHOTOSHOOT_EXPORT: '/photoshoot/{:photoshoot}/export',
   PHOTOSHOOT_FILES: '/photoshoot/{:photoshoot}/files',
   PHOTOSHOOT_SELECTION_QUOTA: '/selection/quota',

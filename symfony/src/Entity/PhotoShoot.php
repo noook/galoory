@@ -59,7 +59,7 @@ class PhotoShoot
      * @ORM\Column(type="text")
      * @Groups({"photoshoot"})
      */
-    private $comment;
+    private string $comment;
 
     public function __construct()
     {

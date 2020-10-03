@@ -175,6 +175,22 @@ class PhotoShootController extends AbstractController
     }
 
     /**
+     * @Route("/photoshoot/me", name="get-user-photoshoot", methods={"GET"})
+     */
+    public function getUserPhotoshoot(): JsonResponse
+    {
+        $user = $this->getUser();
+        // dd($user->getPhotoshoot());
+
+        return $this->json(
+            $user->getPhotoshoot(),
+            JsonResponse::HTTP_OK,
+            [],
+            ['groups' => ['photoshoot', 'user', 'photo-package']]
+        );
+    }
+
+    /**
      * @Route("/photoshoot/{photoshoot}", name="get-photoshoot", methods={"GET"})
      * @ParamConverter("photoshoot", class="App\Entity\PhotoShoot")
      */

@@ -25,6 +25,11 @@ export default function usePhotoshootRepository() {
       .then(({ data }) => dtoTransformer(data));
   }
 
+  function getUserShoot(): Promise<Photoshoot> {
+    return api.get<PhotoshootDTO>(routeMap.get(ROUTES.PHOTOSHOOT_ME))
+      .then(({ data }) => dtoTransformer(data));
+  }
+
   function list(): Promise<Photoshoot[]> {
     return api.get<PhotoshootDTO[]>(routeMap.get(ROUTES.PHOTOSHOOTS))
       .then(({ data }) => {
@@ -87,6 +92,7 @@ export default function usePhotoshootRepository() {
     photoshoots,
 
     get,
+    getUserShoot,
     list,
     exportOutput,
 

@@ -1,8 +1,8 @@
 <template>
   <div class="picture-detail">
     <div class="md:px-16">
-      <h1 class="mb-2">
-        Gladys - 28 Juin 2020
+      <h1 v-if="photoshoot" class="mb-2">
+        {{ photoshoot.customer.firstname }} - {{ toReadableDate(photoshoot.date) }}
       </h1>
       <div class="pagination">
         <button
@@ -60,7 +60,10 @@ import {
 } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import usePicturesRepository from '@/api/repositories/pictures';
+import usePhotoshootRepository from '@/api/repositories/photoshoot';
+import { toReadableDate } from '@/filters';
 import selection, { useSelection } from '@/store/selection';
+import { Photoshoot } from '@/types/models';
 
 import Checkbox from '@/components/Checkbox.vue';
 
@@ -74,6 +77,14 @@ export default defineComponent({
     let rangeRequest = Promise.resolve();
 
     useSelection();
+
+    const { getUserShoot } = usePhotoshootRepository();
+    const photoshoot = ref<Photoshoot>();
+
+    getUserShoot()
+      .then(shoot => {
+        photoshoot.value = shoot;
+      });
 
     function updateSelection(value: boolean) {
       if (value) {
@@ -158,6 +169,9 @@ export default defineComponent({
     });
 
     return {
+      photoshoot,
+      toReadableDate,
+
       isSelected,
       updateSelection,
       selection: reactive(selection),

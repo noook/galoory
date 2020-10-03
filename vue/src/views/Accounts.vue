@@ -14,7 +14,7 @@
           <th>Nom</th>
           <th>Formule</th>
           <th>Statut</th>
-          <th>Expiration</th>
+          <th>Date</th>
           <th />
         </tr>
       </thead>
