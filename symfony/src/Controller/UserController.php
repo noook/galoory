@@ -33,7 +33,6 @@ class UserController extends AbstractController
                 new CreateUser(
                     $payload['email'],
                     $payload['firstname'],
-                    $payload['lastname'],
                     $payload['password'],
                 )
             );

@@ -24,13 +24,6 @@ class UserRegisterType extends AbstractType
                     ]),
                 ],
             ])
-            ->add('lastname', TextType::class, [
-                'constraints' => [
-                    new NotBlank([
-                        'message' => 'Missing field "lastname"'
-                    ]),
-                ],
-            ])
             ->add('email', EmailType::class, [
                 'constraints' => [
                     new NotBlank([

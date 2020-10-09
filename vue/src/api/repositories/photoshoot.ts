@@ -80,7 +80,7 @@ export default function usePhotoshootRepository() {
       .then((response) => {
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const { customer } = shoot;
-        const filename = `${customer.firstname}-${customer.lastname}-${shoot.package.name}.txt`;
+        const filename = `${customer.firstname}-${shoot.package.name}.txt`;
         const link = document.createElement('a');
         link.href = url;
         link.setAttribute('download', filename);

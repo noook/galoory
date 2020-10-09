@@ -39,15 +39,6 @@
                 type="text">
             </div>
             <div class="form-input">
-              <label for="lastname">Nom</label>
-              <input
-                id="lastname"
-                v-model="form.lastname"
-                :disabled="!editMode"
-                required
-                type="text">
-            </div>
-            <div class="form-input">
               <label for="email">Email</label>
               <input
                 id="email"
@@ -217,7 +208,6 @@ export default defineComponent({
 
     const form = ref({
       firstname: '',
-      lastname: '',
       email: '',
     });
 
@@ -299,8 +289,8 @@ export default defineComponent({
       getPhotoshoot(route.params.photoshootId as string)
         .then(shoot => {
           photoshoot.value = shoot;
-          const { firstname, lastname, email } = shoot.customer;
-          form.value = { firstname, lastname, email };
+          const { firstname, email } = shoot.customer;
+          form.value = { firstname, email };
         });
     } else {
       photoshoot.value = {
@@ -357,7 +347,7 @@ main {
 
 form {
   .fields {
-    @apply grid grid-cols-2 grid-rows-3 grid-flow-col;
+    @apply grid grid-cols-2 grid-rows-2 grid-flow-col;
     @apply gap-x-12 gap-y-2;
   }
 }

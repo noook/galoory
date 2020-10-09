@@ -9,7 +9,6 @@ interface JWT {
   roles: string[];
   username: string;
   firstname: string;
-  lastname: string;
 }
 
 export function getToken(): string | null {

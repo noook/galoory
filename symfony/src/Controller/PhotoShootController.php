@@ -104,7 +104,6 @@ class PhotoShootController extends AbstractController
                     new CreateUser(
                         $userPayload['email'],
                         $userPayload['firstname'],
-                        $userPayload['lastname'],
                         $password
                     )
                 );
@@ -382,7 +381,6 @@ class PhotoShootController extends AbstractController
             sprintf(
                 "%s %s - Formule %s\n\n",
                 $customer->getFirstname(),
-                $customer->getLastname(),
                 $photoshoot->getPackage()->getName(),
             ),
         );

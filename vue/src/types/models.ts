@@ -15,7 +15,7 @@ export interface PhotoPackage {
 type PhotoshootStatus = 'pending' | 'done';
 
 export interface NewPhotoshoot {
-  user: Pick<User, 'firstname' | 'lastname' | 'email'>;
+  user: Pick<User, 'firstname' | 'email'>;
   date: Date;
   package: PhotoPackage;
   comment: string;

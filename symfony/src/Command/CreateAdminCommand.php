@@ -27,7 +27,6 @@ class CreateAdminCommand extends Command
         $this
             ->setDescription('Creates an admin for first use')
             ->addArgument('firstname', InputArgument::REQUIRED, 'Admin\'s firstname')
-            ->addArgument('lastname', InputArgument::REQUIRED, 'Admin\'s lastname')
             ->addArgument('email', InputArgument::REQUIRED, 'Admin\'s email')
             ->addArgument('password', InputArgument::REQUIRED, 'Admin\'s password')
         ;
@@ -37,7 +36,6 @@ class CreateAdminCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $firstname = $input->getArgument('firstname');
-        $lastname = $input->getArgument('lastname');
         $email = $input->getArgument('email');
         $password = $input->getArgument('password');
 
@@ -46,7 +44,6 @@ class CreateAdminCommand extends Command
                 new CreateUser(
                     $email,
                     $firstname,
-                    $lastname,
                     $password,
                     true
                 )

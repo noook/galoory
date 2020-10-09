@@ -58,7 +58,7 @@ export default defineComponent({
   setup(props, { emit }) {
     const customerFullname = computed(() => {
       const { customer } = props.photoshoot;
-      return `${customer.firstname} ${customer.lastname}`;
+      return customer.firstname;
     });
 
     const detailRoute = computed(() => ({

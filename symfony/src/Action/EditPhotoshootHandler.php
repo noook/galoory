@@ -38,8 +38,7 @@ class EditPhotoshootHandler implements MessageHandlerInterface
 
         $user
             ->setEmail($updatedUser['email'])
-            ->setFirstname($updatedUser['firstname'])
-            ->setLastname($updatedUser['lastname']);
+            ->setFirstname($updatedUser['firstname']);
 
         $photoshoot
             ->setDate($command->getDate())

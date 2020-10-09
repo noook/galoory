@@ -34,7 +34,6 @@ class CreateUserHandler implements MessageHandlerInterface
         $user = new User;
         $user
             ->setFirstname($command->getFirstname())
-            ->setLastname($command->getLastname())
             ->setEmail($command->getEmail());
 
         $errors = $this->validator->validate($user);

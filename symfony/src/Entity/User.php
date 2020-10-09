@@ -63,12 +63,6 @@ class User implements UserInterface
      */
     private $firstname;
 
-    /**
-     * @ORM\Column(type="string", length=100)
-     * @Groups({"user"})
-     */
-    private $lastname;
-
     public function __construct()
     {
         $this->id = Uuid::uuid4();
@@ -177,18 +171,6 @@ class User implements UserInterface
     public function setFirstname(string $firstname): self
     {
         $this->firstname = $firstname;
-
-        return $this;
-    }
-
-    public function getLastname(): ?string
-    {
-        return $this->lastname;
-    }
-
-    public function setLastname(string $lastname): self
-    {
-        $this->lastname = $lastname;
 
         return $this;
     }

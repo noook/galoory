@@ -39,7 +39,7 @@ class UserTransformer implements DataTransformerInterface
             return $user;
         }
 
-        if (!isset($value['email']) || !isset($value['firstname']) || !isset($value['lastname'])) {
+        if (!isset($value['email']) || !isset($value['firstname'])) {
             throw new TransformationFailedException(sprintf('Invalid payload', $value));
         }
 
@@ -48,7 +48,6 @@ class UserTransformer implements DataTransformerInterface
                 new CreateUser(
                     $value['email'],
                     $value['firstname'],
-                    $value['lastname'],
                     'password',
                 )
             );

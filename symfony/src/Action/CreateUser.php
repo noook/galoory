@@ -13,8 +13,6 @@ class CreateUser
 
     private string $firstname;
 
-    private string $lastname;
-
     private bool $admin;
 
     /**
@@ -25,14 +23,12 @@ class CreateUser
     public function __construct(
         string $email,
         string $firstname,
-        string $lastname,
         string $password,
         bool $admin = false
     )
     {
         $this->email = $email;
         $this->firstname = $firstname;
-        $this->lastname = $lastname;
         $this->password = $password;
         $this->admin = $admin;
     }
@@ -45,11 +41,6 @@ class CreateUser
     public function getFirstname(): string
     {
         return $this->firstname;
-    }
-
-    public function getLastname(): string
-    {
-        return $this->lastname;
     }
 
     public function getPassword(): string
