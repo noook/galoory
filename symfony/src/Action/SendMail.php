@@ -14,7 +14,7 @@ class SendMail {
         string $body,
         string $altBody,
         string $recipient,
-        bool $notify = false,
+        bool $notify = false
     )
     {
         $this->subject = $subject;
