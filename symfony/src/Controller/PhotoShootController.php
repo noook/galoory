@@ -146,6 +146,7 @@ class PhotoShootController extends AbstractController
                         replaceBody($body, $user, $password),
                         replaceBody($altBody, $user, $password),
                         $user->getEmail(),
+                        true,
                     )
                 );
             } catch (\Exception $e) {
@@ -352,6 +353,7 @@ class PhotoShootController extends AbstractController
                     replaceBody($body, $user->getFirstname(), $pictures, '<br>'),
                     replaceBody($body, $user->getFirstname(), $pictures, "\n"),
                     $bag->get('notified_admin'),
+                    false,
                 )
             );
         } catch (\Exception $e) {

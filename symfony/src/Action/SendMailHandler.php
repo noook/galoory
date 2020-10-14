@@ -26,11 +26,13 @@ class SendMailHandler implements MessageHandlerInterface
         $email = (new Email())
             ->from($this->bag->get('notified_admin'))
             ->to($command->getRecipient())
-            ->addBcc($this->bag->get('notified_admin'))
             ->subject($command->getSubject())
             ->text($command->getAltBody())
             ->html($command->getBody());
 
+        if ($command->shouldNotify() === true) {
+            $email->addBcc($this->bag->get('notified_admin'));
+        }
 
         $service = new Google_Service_Gmail($this->client);
         $message = new Google_Service_Gmail_Message;

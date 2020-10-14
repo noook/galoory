@@ -7,18 +7,21 @@ class SendMail {
     private string $body;
     private string $altBody;
     private string $recipient;
+    private string $notify;
 
     public function __construct(
         string $subject,
         string $body,
         string $altBody,
-        string $recipient
+        string $recipient,
+        bool $notify = false,
     )
     {
         $this->subject = $subject;
         $this->body = $body;
         $this->altBody = $altBody;
         $this->recipient = $recipient;
+        $this->notify = $notify;
     }
 
     public function getSubject(): string {
@@ -30,10 +33,14 @@ class SendMail {
     }
 
     public function getAltBody(): string {
-        return $this->body;
+        return $this->altBody;
     }
 
     public function getRecipient(): string {
         return $this->recipient;
+    }
+
+    public function shouldNotify(): bool {
+        return $this->notify;
     }
 }
