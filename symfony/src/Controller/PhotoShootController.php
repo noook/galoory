@@ -345,6 +345,7 @@ class PhotoShootController extends AbstractController
                     "%s";
 
             $pictures = $photoshoot->getSelectedPictures()->map(fn (SelectedPicture $pic) => $pic->getFilename())->toArray();
+            natsort($pictures);
             $commandBus->dispatch(
                 new SendMail(
                     sprintf('%s vient de finir de sa sélection de photo !', $user->getFirstname()),
