@@ -349,7 +349,7 @@ class PhotoShootController extends AbstractController
             $content,
             Response::HTTP_OK,
             [
-                'Filename' => sprintf('export-%s.txt', strtolower($photoshoot->getCustomer())),
+                'Filename' => sprintf('export-%s.txt', strtolower($photoshoot->getCustomer()->getFirstname())),
                 'Content-Type' => 'text/txt',
             ]
         );
