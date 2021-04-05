@@ -89,7 +89,7 @@ export default defineComponent({
 
     listPictures();
     const { getUserShoot } = usePhotoshootRepository();
-    const photoshoot = ref<Photoshoot>();
+    const photoshoot = ref<Photoshoot>({} as Photoshoot);
 
     getUserShoot()
       .then(shoot => {

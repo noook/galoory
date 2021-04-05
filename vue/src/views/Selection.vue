@@ -1,8 +1,8 @@
 <template>
   <div class="selection">
     <div class="md:px-16">
-      <h1 class="mb-8">
-        Gladys - 28 Juin 2020
+      <h1 v-if="loaded" class="mb-8">
+        {{ photoshoot.customer.firstname }} - {{ toReadableDate(photoshoot.date) }}
       </h1>
       <div class="head">
         <p
@@ -46,7 +46,10 @@
 <script lang="ts">
 import { defineComponent, reactive, ref } from 'vue';
 import selection, { useSelection } from '@/store/selection';
+import { Photoshoot } from '@/types/models';
+import { toReadableDate } from '@/filters';
 import usePictureRepository from '@/api/repositories/pictures';
+import usePhotoshootRepository from '@/api/repositories/photoshoot';
 
 import Popup from '@/components/Popup.vue';
 
@@ -55,9 +58,18 @@ export default defineComponent({
   components: { Popup },
   setup() {
     const popupVisible = ref(false);
+    const loaded = ref(false);
 
     useSelection();
     const { getStaticRoute } = usePictureRepository();
+
+    const photoshoot = ref<Photoshoot>({} as Photoshoot);
+    const { getUserShoot } = usePhotoshootRepository();
+    getUserShoot()
+      .then(response => {
+        photoshoot.value = response;
+        loaded.value = true;
+      });
 
     function validateSelection() {
       selection.validate()
@@ -68,11 +80,14 @@ export default defineComponent({
 
     return {
       popupVisible,
+      loaded,
+      photoshoot,
 
       selection: reactive(selection),
       validateSelection,
 
       getStaticRoute,
+      toReadableDate,
     };
   },
 });
