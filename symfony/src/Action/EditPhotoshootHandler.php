@@ -42,7 +42,7 @@ class EditPhotoshootHandler implements MessageHandlerInterface
 
         $photoshoot
             ->setDate($command->getDate())
-            ->setPackage($command->getPhotoPackage());
+            ->setQuantity($command->getQuantity());
 
         $this->em->flush();
 

@@ -27,8 +27,8 @@ class CreatePhotoshootHandler implements MessageHandlerInterface
         $shoot = new PhotoShoot;
         $shoot
             ->setCustomer($command->getUser())
-            ->setPackage($command->getPhotoPackage())
             ->setDate($command->getDate())
+            ->setQuantity(($command->getQuantity()))
             ->setComment($command->getComment())
             ->setStatus(PhotoShoot::STATUS_PENDING);
 

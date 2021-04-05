@@ -1,9 +1,9 @@
-export function toDMY(date: Date): string {
+export function toDMY(date: Date, separator = '/'): string {
   return [
     date.getDate().toString().padStart(2, '0'),
     (date.getMonth() + 1).toString().padStart(2, '0'),
     date.getFullYear(),
-  ].join('/');
+  ].join(separator);
 }
 
 export function toReadableDate(date: Date): string {

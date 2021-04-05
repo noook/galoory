@@ -6,18 +6,12 @@ export interface User {
   lastname: string;
 }
 
-export interface PhotoPackage {
-  id: string;
-  name: string;
-  quantity: number;
-}
-
 type PhotoshootStatus = 'pending' | 'done';
 
 export interface NewPhotoshoot {
   user: Pick<User, 'firstname' | 'email'>;
   date: Date;
-  package: PhotoPackage;
+  quantity: number;
   comment: string;
 }
 
@@ -26,7 +20,7 @@ export interface PhotoshootDTO {
   customer: User;
   date: string;
   status: PhotoshootStatus;
-  package: PhotoPackage;
+  quantity: number;
   comment: string;
 }
 
@@ -35,7 +29,7 @@ export interface Photoshoot {
   customer: User;
   date: Date;
   status: PhotoshootStatus;
-  package: PhotoPackage;
+  quantity: number;
   comment: string;
 }
 

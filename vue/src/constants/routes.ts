@@ -1,5 +1,4 @@
 export const ROUTES = {
-  PHOTO_PACKAGES: '/photo-package',
   PHOTOSHOOTS: '/photoshoot',
   PHOTOSHOOT_VALIDATE: '/photoshoot/validate',
   PHOTOSHOOT: '/photoshoot/{:photoshoot}',

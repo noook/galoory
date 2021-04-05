@@ -44,11 +44,10 @@ class PhotoShoot
     private string $status;
 
     /**
-     * @ORM\ManyToOne(targetEntity=PhotoPackage::class)
-     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
+     * @ORM\Column(type="integer", nullable=true)
      * @Groups({"photoshoot"})
      */
-    private $package;
+    private int $quantity;
 
     /**
      * @ORM\OneToMany(targetEntity=SelectedPicture::class, mappedBy="photoshoot", orphanRemoval=true)
@@ -108,14 +107,14 @@ class PhotoShoot
         return $this;
     }
 
-    public function getPackage(): ?PhotoPackage
+    public function getQuantity(): int
     {
-        return $this->package;
+        return $this->quantity;
     }
 
-    public function setPackage(?PhotoPackage $package): self
+    public function setQuantity(int $quantity): self
     {
-        $this->package = $package;
+        $this->quantity = $quantity;
 
         return $this;
     }

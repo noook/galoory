@@ -8,17 +8,13 @@ use App\Action\DeletePhotoshoot;
 use App\Action\EditPhotoshoot;
 use App\Action\SaveFile;
 use App\Action\SendMail;
-use App\Entity\PhotoPackage;
 use App\Entity\PhotoShoot;
 use App\Entity\SelectedPicture;
 use App\Entity\User;
 use App\Form\UserRegisterType;
-use App\Repository\PhotoPackageRepository;
 use App\Repository\PhotoShootRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Query\Expr\Select;
-use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -40,7 +36,7 @@ class PhotoShootController extends AbstractController
             $photoShootRepository->findAll(),
             JsonResponse::HTTP_OK,
             [],
-            ['groups' => ['photoshoot', 'user', 'photo-package']]
+            ['groups' => ['photoshoot', 'user']]
         );
     }
 
@@ -49,16 +45,14 @@ class PhotoShootController extends AbstractController
      */
     public function newPhotoshoot(
         Request $request,
-        PhotoPackageRepository $photoPackageRepository,
         UserRepository $userRepository,
-        EntityManagerInterface $em,
         MessageBusInterface $commandBus,
         ParameterBagInterface $bag
     ): JsonResponse
     {
         $payload = \json_decode($request->getContent(), true);
 
-        $requiredFields = ['user', 'package', 'date', 'comment'];
+        $requiredFields = ['user', 'quantity', 'date'];
         
         foreach ($requiredFields as $field) {
             if (!isset($payload[$field])) {
@@ -66,23 +60,6 @@ class PhotoShootController extends AbstractController
                     'message' => sprintf('Missing field "%s"', $field),
                 ], JsonResponse::HTTP_BAD_REQUEST);
             }
-        }
-
-        if (Uuid::isValid($payload['package']['id'])) {
-            $package = $photoPackageRepository->find($payload['package']['id']);
-        } else if ($payload['package']['id'] === 'other') {
-            $package = (new PhotoPackage)
-                ->setQuantity($payload['package']['quantity'])
-                ->setName($payload['package']['name']);
-            
-            $em->persist($package);
-            $em->flush();
-        }
-
-        if (null === $package) {
-            return $this->json([
-                'message' => sprintf('Invalid value "%s" for field "package"', $payload['package']['id']),
-            ], JsonResponse::HTTP_BAD_REQUEST);
         }
 
         if (is_string($payload['user'])) {
@@ -161,7 +138,7 @@ class PhotoShootController extends AbstractController
         $envelope = $commandBus->dispatch(
             new CreatePhotoshoot(
                 $user,
-                $package,
+                $payload['quantity'],
                 $date,
                 $payload['comment'],
             )
@@ -173,7 +150,7 @@ class PhotoShootController extends AbstractController
             $photoshoot,
             JsonResponse::HTTP_CREATED,
             [],
-            ['groups' => ['photoshoot', 'user', 'photo-package']]
+            ['groups' => ['photoshoot', 'user']]
         );
     }
 
@@ -183,13 +160,12 @@ class PhotoShootController extends AbstractController
     public function getUserPhotoshoot(): JsonResponse
     {
         $user = $this->getUser();
-        // dd($user->getPhotoshoot());
 
         return $this->json(
             $user->getPhotoshoot(),
             JsonResponse::HTTP_OK,
             [],
-            ['groups' => ['photoshoot', 'user', 'photo-package']]
+            ['groups' => ['photoshoot', 'user']]
         );
     }
 
@@ -203,7 +179,7 @@ class PhotoShootController extends AbstractController
             $photoshoot,
             JsonResponse::HTTP_OK,
             [],
-            ['groups' => ['photoshoot', 'user', 'photo-package']]
+            ['groups' => ['photoshoot', 'user']]
         );
     }
 
@@ -214,15 +190,13 @@ class PhotoShootController extends AbstractController
     public function editPhotoshoot(
         Request $request,
         PhotoShoot $photoshoot,
-        PhotoPackageRepository $photoPackageRepository,
-        MessageBusInterface $bus,
-        EntityManagerInterface $em
+        MessageBusInterface $bus
     ): JsonResponse
     {
         $payload = \json_decode($request->getContent(), true);
 
-        $requiredFields = ['user', 'package', 'date', 'comment'];
-        
+        $requiredFields = ['user', 'quantity', 'date'];
+
         foreach ($requiredFields as $field) {
             if (!isset($payload[$field])) {
                 return $this->json([
@@ -231,30 +205,13 @@ class PhotoShootController extends AbstractController
             }
         }
 
-        if (Uuid::isValid($payload['package']['id'])) {
-            $package = $photoPackageRepository->find($payload['package']['id']);
-        } else if ($payload['package']['id'] === 'other') {
-            $package = (new PhotoPackage)
-                ->setQuantity($payload['package']['quantity'])
-                ->setName($payload['package']['name']);
-            
-            $em->persist($package);
-            $em->flush();
-        }
-
-        if (null === $package) {
-            return $this->json([
-                'message' => sprintf('Invalid value "%s" for field "package"', $payload['package']),
-            ], JsonResponse::HTTP_BAD_REQUEST);
-        }
-
         $date = new \DateTime($payload['date']);
 
         try {
             $envelope = $bus->dispatch(
                 new EditPhotoshoot(
                     $photoshoot,
-                    $package,
+                    $payload['quantity'],
                     $payload['user'],
                     $date,
                     $payload['comment'],
@@ -266,7 +223,7 @@ class PhotoShootController extends AbstractController
                 $photoshoot,
                 JsonResponse::HTTP_OK,
                 [],
-                ['groups' => ['photoshoot', 'user', 'photo-package']]
+                ['groups' => ['photoshoot', 'user']]
             );
         } catch (\Exception $e) {
             return $this->json([
@@ -341,7 +298,7 @@ class PhotoShootController extends AbstractController
         }
 
         try {
-            $body = "%s vient de finir de sa sélection de photos !%s%s" .
+            $body = "%s vient de finir sa sélection de photos !%s%s" .
                     "Photos choisies:%s" .
                     "%s";
 
@@ -349,7 +306,7 @@ class PhotoShootController extends AbstractController
             natsort($pictures);
             $commandBus->dispatch(
                 new SendMail(
-                    sprintf('%s vient de finir de sa sélection de photo !', $user->getFirstname()),
+                    sprintf('%s vient de finir sa sélection de photos !', $user->getFirstname()),
                     replaceBody($body, $user->getFirstname(), $pictures, '<br>'),
                     replaceBody($body, $user->getFirstname(), $pictures, "\n"),
                     $bag->get('notified_admin'),
@@ -382,9 +339,9 @@ class PhotoShootController extends AbstractController
             $photoshoot->getSelectedPictures()->toArray(),
             fn (string $acc, SelectedPicture $file) => sprintf("%s%s\n", $acc, $file->getFilename()),
             sprintf(
-                "%s %s - Formule %s\n\n",
+                "%s - Formule %d photos\n\n",
                 $customer->getFirstname(),
-                $photoshoot->getPackage()->getName(),
+                $photoshoot->getQuantity(),
             ),
         );
 
@@ -392,7 +349,7 @@ class PhotoShootController extends AbstractController
             $content,
             Response::HTTP_OK,
             [
-                'Filename' => 'export.txt',
+                'Filename' => sprintf('export-%s.txt', strtolower($photoshoot->getCustomer())),
                 'Content-Type' => 'text/txt',
             ]
         );

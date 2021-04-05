@@ -2,27 +2,26 @@
 
 namespace App\Action;
 
-use App\Entity\PhotoPackage;
 use App\Entity\PhotoShoot;
 
 class EditPhotoshoot
 {
     private PhotoShoot $photoshoot;
-    private PhotoPackage $package;
+    private int $quantity;
     private array $user;
     private \DateTime $date;
     private string $comment;
 
     public function __construct(
         PhotoShoot $photoshoot,
-        PhotoPackage $package,
+        int $quantity,
         array $user,
         \DateTime $date,
         string $comment
     )
     {
         $this->photoshoot = $photoshoot;
-        $this->package = $package;
+        $this->quantity = $quantity;
         $this->user = $user;
         $this->date = $date;
         $this->comment = $comment;
@@ -33,9 +32,9 @@ class EditPhotoshoot
         return $this->photoshoot;
     }
 
-    public function getPhotoPackage(): PhotoPackage
+    public function getQuantity(): int
     {
-        return $this->package;
+        return $this->quantity;
     }
 
     public function getUser(): array

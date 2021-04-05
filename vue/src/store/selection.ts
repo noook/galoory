@@ -57,7 +57,7 @@ function removeFromSelection(filename: string) {
 }
 
 function validate() {
-  return api.post<Omit<PhotoshootDTO, 'package' | 'customer'>>(routeMap.get(ROUTES.PHOTOSHOOT_VALIDATE))
+  return api.post<Omit<PhotoshootDTO, 'customer'>>(routeMap.get(ROUTES.PHOTOSHOOT_VALIDATE))
     .then(({ data }) => data);
 }
 

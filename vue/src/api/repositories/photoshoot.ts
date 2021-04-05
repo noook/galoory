@@ -4,6 +4,7 @@ import { api } from '@/api/client';
 import { ROUTES } from '@/constants';
 import { PhotoshootDTO, Photoshoot, NewPhotoshoot } from '@/types/models';
 import { FileInterface } from '@/composition/file-handler';
+import { toDMY } from '@/filters';
 
 export default function usePhotoshootRepository() {
   const photoshoots = ref<Photoshoot[]>([]);
@@ -79,8 +80,8 @@ export default function usePhotoshootRepository() {
     })
       .then((response) => {
         const url = window.URL.createObjectURL(new Blob([response.data]));
-        const { customer } = shoot;
-        const filename = `${customer.firstname}-${shoot.package.name}.txt`;
+        const { customer, date } = shoot;
+        const filename = `${customer.firstname}-${toDMY(date, '-')}.txt`;
         const link = document.createElement('a');
         link.href = url;
         link.setAttribute('download', filename);

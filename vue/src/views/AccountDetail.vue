@@ -48,36 +48,14 @@
                 type="email">
             </div>
             <div class="form-input">
-              <label>Formule</label>
-              <Dropdown
-                :class="{ warn: packageMissing }"
-                :disabled="!editMode"
-                @select="setPackage">
-                <template #value>
-                  <span v-if="photoshoot.package">
-                    {{ photoshoot.package.name }} ({{ photoshoot.package.quantity }} photos)
-                  </span>
-                  <span v-else>—</span>
-                </template>
-                <template #content="{ select }">
-                  <ul>
-                    <li v-for="pkg in packages" :key="pkg.id" @click="select(pkg)">
-                      {{ pkg.name }}
-                    </li>
-                    <li @click="select({ id: 'other', quantity: 6, name: 'Autre' })">
-                      Autre
-                    </li>
-                  </ul>
-                </template>
-              </Dropdown>
-            </div>
-            <div v-if="photoshoot.package && photoshoot.package.id === 'other'" class="form-input">
               <label>Nombre de photos</label>
               <input
-                v-model="photoshoot.package.quantity"
-                type="number"
+                id="quantity"
+                v-model="photoshoot.quantity"
+                :disabled="!editMode"
+                required
                 min="1"
-                step="1">
+                type="number">
             </div>
             <div class="form-input">
               <label>Date</label>
@@ -164,12 +142,10 @@
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { Photoshoot, PhotoPackage } from '@/types/models';
+import { Photoshoot } from '@/types/models';
 import usePhotoshootRepository from '@/api/repositories/photoshoot';
-import usePhotoPackageRepository from '@/api/repositories/photo-package';
 import useFileHandler, { FileInputEvent, countFiles, FileInterface } from '@/composition/file-handler';
 
-import Dropdown from '@/components/Dropdown.vue';
 import Datepicker from '@/components/Datepicker.vue';
 import Popup from '@/components/Popup.vue';
 import zipIcon from '@/assets/svg/zip.svg';
@@ -178,7 +154,6 @@ import fileIcon from '@/assets/svg/file.svg';
 export default defineComponent({
   name: 'AccountDetail',
   components: {
-    Dropdown,
     Datepicker,
     Popup,
   },
@@ -191,19 +166,11 @@ export default defineComponent({
     const {
       get: getPhotoshoot, update, create, saveFiles,
     } = usePhotoshootRepository();
-    const { packages } = usePhotoPackageRepository({ fetch: true });
-    const packageMissing = ref(false);
 
-    const photoshoot = ref<Partial<Photoshoot> | null>(null);
+    const photoshoot = ref<Photoshoot>({} as Photoshoot);
     if (isNewPhotoshoot.value === true) {
-      photoshoot.value = {
-        comment: '',
-      };
-    }
-
-    function setPackage(pkg: PhotoPackage) {
-      packageMissing.value = false;
-      photoshoot.value!.package = pkg;
+      photoshoot.value.comment = '';
+      photoshoot.value.quantity = 6;
     }
 
     const form = ref({
@@ -239,19 +206,14 @@ export default defineComponent({
     const submitting = ref(false);
 
     async function savePhotoshoot() {
-      packageMissing.value = false;
       submitting.value = true;
 
       if (isNewPhotoshoot.value) {
-        if (!photoshoot.value?.package) {
-          packageMissing.value = true;
-          return;
-        }
         await create({
           user: form.value,
-          package: photoshoot.value.package,
-          date: photoshoot.value.date!,
-          comment: photoshoot.value.comment!,
+          date: photoshoot.value.date,
+          comment: photoshoot.value.comment,
+          quantity: photoshoot.value.quantity,
         })
           .then(shoot => saveFiles(shoot, fileHandler.files.value))
           .then(shoot => {
@@ -266,11 +228,11 @@ export default defineComponent({
             });
           });
       } else {
-        await update(photoshoot.value!.id!, {
+        await update(photoshoot.value.id, {
           user: form.value,
-          package: photoshoot.value!.package!,
-          date: photoshoot.value!.date!,
-          comment: photoshoot.value!.comment!,
+          quantity: photoshoot.value.quantity,
+          date: photoshoot.value.date,
+          comment: photoshoot.value.comment,
         })
           .then(shoot => saveFiles(shoot, fileHandler.files.value))
           .then(shoot => {
@@ -293,20 +255,15 @@ export default defineComponent({
           form.value = { firstname, email };
         });
     } else {
-      photoshoot.value = {
-        date: new Date(),
-        package: undefined,
-      };
+      photoshoot.value.date = new Date();
     }
 
     return {
       popupVisible,
       submitting,
 
-      packages,
       editMode,
       isNewPhotoshoot,
-      packageMissing,
 
       isDraggingOver,
       files: fileHandler.files,
@@ -316,7 +273,6 @@ export default defineComponent({
 
       form,
       photoshoot,
-      setPackage,
       savePhotoshoot,
     };
   },

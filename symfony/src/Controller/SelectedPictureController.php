@@ -34,10 +34,10 @@ class SelectedPictureController extends AbstractController
     {
         /** @var \App\Entity\User */
         $user = $this->getUser();
-        $package = $user->getPhotoShoot()->getPackage();
+        $quantity = $user->getPhotoShoot()->getQuantity();
 
         return $this->json([
-            'quota' => $package->getQuantity(),
+            'quota' => $quantity,
         ]);
     }
 

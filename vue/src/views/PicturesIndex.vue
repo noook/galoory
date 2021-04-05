@@ -5,10 +5,7 @@
         {{ photoshoot.customer.firstname }} - {{ toReadableDate(photoshoot.date) }}
       </h1>
       <h2>
-        Formule
-        {{ photoshoot.package.name === 'Autre' ? 'personnalisée': photoshoot.package.name }}
-        -
-        {{ photoshoot.package.quantity }} photos
+        Formule {{ photoshoot.quantity }} photos
       </h2>
       <p>{{ photoshoot.comment }}</p>
     </div>

@@ -3,7 +3,7 @@
     <td class="font-semibold">
       {{ customerFullname }}
     </td>
-    <td>{{ photoshoot.package.name }}</td>
+    <td>{{ photoshoot.quantity }} photo{{ photoshoot.quantity > 1 ? 's' : '' }}</td>
     <td>
       <div class="flex items-center">
         <img
@@ -33,25 +33,18 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue';
+import { defineComponent, computed, PropType } from 'vue';
 import usePhotoshootRepository from '@/api/repositories/photoshoot';
 import { toDMY } from '@/filters';
 import { Photoshoot } from '@/types/models';
 import { STATUSES_ICONS, STATUSES_FR } from '@/constants';
-
-interface Props {
-  photoshoot: {
-    type: () => Photoshoot;
-    required: true;
-  };
-}
 
 export default defineComponent({
   name: 'PhotoshootRow',
   props: {
     photoshoot: {
       required: true,
-      type: Object as () => Photoshoot,
+      type: Object as PropType<Photoshoot>,
     },
   },
   emits: ['delete'],
