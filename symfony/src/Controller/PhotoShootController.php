@@ -33,7 +33,9 @@ class PhotoShootController extends AbstractController
     public function listPhotoshoots(PhotoShootRepository $photoShootRepository): JsonResponse
     {
         return $this->json(
-            $photoShootRepository->findAll(),
+            $photoShootRepository->findBy([], [
+                'date' => 'ASC'
+            ]),
             JsonResponse::HTTP_OK,
             [],
             ['groups' => ['photoshoot', 'user']]
