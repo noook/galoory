@@ -52,6 +52,8 @@ class PictureController extends AbstractController
         foreach (array_slice($results, $offset, self::PER_PAGE) as $key => $file) {
             $pagination['results'][$offset + $key + 1] = $file;
         }
+
+        $pagination['results'] = array_values($pagination['results']);
         
         return $this->json($pagination);
     }
