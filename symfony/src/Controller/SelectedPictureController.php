@@ -25,7 +25,7 @@ class SelectedPictureController extends AbstractController
         $selectedFiles = array_map(fn (SelectedPicture $file) => $file->getFilename(), $photoshoot->getSelectedPictures()->toArray());
         natsort($selectedFiles);
 
-        return $this->json($selectedFiles);
+        return $this->json(array_values($selectedFiles));
     }
 
     /**

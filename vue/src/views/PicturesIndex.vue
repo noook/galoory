@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <div v-if="photoshoot" class="md:px-16">
+    <div v-if="photoshootLoaded" class="md:px-16">
       <h1 class="mb-2">
         {{ photoshoot.customer.firstname }} - {{ toReadableDate(photoshoot.date) }}
       </h1>
@@ -89,16 +89,19 @@ export default defineComponent({
 
     listPictures();
     const { getUserShoot } = usePhotoshootRepository();
+    const photoshootLoaded = ref(false);
     const photoshoot = ref<Photoshoot>({} as Photoshoot);
 
     getUserShoot()
       .then(shoot => {
         photoshoot.value = shoot;
+        photoshootLoaded.value = true;
       });
 
     return {
       files: reactive(pagination),
       photoshoot,
+      photoshootLoaded,
 
       getStaticRoute,
 
